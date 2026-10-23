@@ -70,6 +70,8 @@ export interface LatencyStats {
   max: number;
 }
 
+const MAX_PROFILES = 16;
+
 const summarise = (xs: number[]): LatencyStats => {
   if (!xs.length) return { count: 0, p50: 0, p95: 0, max: 0 };
   const s = [...xs].sort((a, b) => a - b);
@@ -210,10 +212,16 @@ export class MatchOrchestrator {
     return key;
   }
 
+  /**
+   * Release a viewer. Profile state (feed history, scheduler) is kept so switching views and back is
+   * seamless; unused profiles are only evicted when more than MAX_PROFILES exist.
+   */
   removeProfile(key: string) {
     const st = this.profiles.get(key);
     if (!st) return;
-    if (--st.refs <= 0) this.profiles.delete(key);
+    st.refs = Math.max(0, st.refs - 1);
+    const idle = [...this.profiles.values()].filter((p) => p.refs === 0);
+    if (this.profiles.size > MAX_PROFILES && idle.length) this.profiles.delete(idle[0].key);
   }
 
   feed(key: string): FeedItem[] {
