@@ -1,0 +1,179 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/recap.schema.json",
+  "title": "Recap",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/Recap",
+  "definitions": {
+    "Recap": {
+      "type": "object",
+      "properties": {
+        "match_id": {
+          "type": "string"
+        },
+        "lang": {
+          "type": "string",
+          "enum": [
+            "en",
+            "fr",
+            "es",
+            "hi",
+            "ar"
+          ]
+        },
+        "generated_at_ts": {
+          "type": "number"
+        },
+        "final_score": {
+          "type": "object",
+          "properties": {
+            "home": {
+              "type": "integer"
+            },
+            "away": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "home",
+            "away"
+          ],
+          "additionalProperties": false
+        },
+        "headline": {
+          "type": "string"
+        },
+        "article_md": {
+          "type": "string"
+        },
+        "script_60s": {
+          "type": "string"
+        },
+        "timeline": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ts": {
+                "type": "number"
+              },
+              "minute_label": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "team": {
+                "type": "string",
+                "enum": [
+                  "home",
+                  "away"
+                ]
+              },
+              "event_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "ts",
+              "minute_label",
+              "kind",
+              "title",
+              "event_ids"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "player_ratings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "player_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "home",
+                  "away"
+                ]
+              },
+              "rating": {
+                "type": "number"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "player_id",
+              "name",
+              "side",
+              "rating",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "key_stats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "home": {
+                "type": "string"
+              },
+              "away": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "home",
+              "away"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "llm",
+            "template"
+          ]
+        },
+        "grounded": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "match_id",
+        "lang",
+        "generated_at_ts",
+        "final_score",
+        "headline",
+        "article_md",
+        "script_60s",
+        "timeline",
+        "player_ratings",
+        "key_stats",
+        "source",
+        "grounded"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

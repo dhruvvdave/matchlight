@@ -1,0 +1,2466 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/stream-record.schema.json",
+  "title": "StreamRecord",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/StreamRecord",
+  "definitions": {
+    "StreamRecord": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "meta"
+            },
+            "meta": {
+              "type": "object",
+              "properties": {
+                "match_id": {
+                  "type": "string"
+                },
+                "seed": {
+                  "type": "integer"
+                },
+                "scenario": {
+                  "type": "string",
+                  "enum": [
+                    "late-comeback",
+                    "red-card-collapse",
+                    "tactical-stalemate",
+                    "random"
+                  ]
+                },
+                "title": {
+                  "type": "string"
+                },
+                "synthetic": {
+                  "type": "boolean",
+                  "const": true
+                },
+                "competition": {
+                  "type": "string"
+                },
+                "stadium": {
+                  "type": "string"
+                },
+                "city": {
+                  "type": "string"
+                },
+                "weather": {
+                  "type": "string"
+                },
+                "referee": {
+                  "type": "string"
+                },
+                "kickoff_iso": {
+                  "type": "string"
+                },
+                "home": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "short": {
+                      "type": "string",
+                      "maxLength": 4
+                    },
+                    "colors": {
+                      "type": "object",
+                      "properties": {
+                        "primary": {
+                          "type": "string"
+                        },
+                        "secondary": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "primary",
+                        "secondary"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "formation": {
+                      "type": "string",
+                      "enum": [
+                        "4-3-3",
+                        "4-2-3-1",
+                        "4-4-2",
+                        "3-5-2",
+                        "5-4-1",
+                        "4-4-1",
+                        "4-2-4",
+                        "5-3-1"
+                      ]
+                    },
+                    "style": {
+                      "type": "object",
+                      "properties": {
+                        "pressing": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "directness": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "tempo": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "line_height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "required": [
+                        "pressing",
+                        "directness",
+                        "tempo",
+                        "line_height"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "players": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "short_name": {
+                            "type": "string"
+                          },
+                          "number": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99
+                          },
+                          "position": {
+                            "type": "string",
+                            "enum": [
+                              "GK",
+                              "CB",
+                              "LB",
+                              "RB",
+                              "LWB",
+                              "RWB",
+                              "DM",
+                              "CM",
+                              "AM",
+                              "LM",
+                              "RM",
+                              "LW",
+                              "RW",
+                              "ST"
+                            ]
+                          },
+                          "side": {
+                            "type": "string",
+                            "enum": [
+                              "home",
+                              "away"
+                            ]
+                          },
+                          "starter": {
+                            "type": "boolean"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "properties": {
+                              "pace": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "passing": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "finishing": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "defending": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "stamina": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "goalkeeping": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              }
+                            },
+                            "required": [
+                              "pace",
+                              "passing",
+                              "finishing",
+                              "defending",
+                              "stamina",
+                              "goalkeeping"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "short_name",
+                          "number",
+                          "position",
+                          "side",
+                          "starter",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "side",
+                    "name",
+                    "short",
+                    "colors",
+                    "formation",
+                    "style",
+                    "players"
+                  ],
+                  "additionalProperties": false
+                },
+                "away": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "side": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "short": {
+                      "type": "string",
+                      "maxLength": 4
+                    },
+                    "colors": {
+                      "type": "object",
+                      "properties": {
+                        "primary": {
+                          "type": "string"
+                        },
+                        "secondary": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "primary",
+                        "secondary"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "formation": {
+                      "type": "string",
+                      "enum": [
+                        "4-3-3",
+                        "4-2-3-1",
+                        "4-4-2",
+                        "3-5-2",
+                        "5-4-1",
+                        "4-4-1",
+                        "4-2-4",
+                        "5-3-1"
+                      ]
+                    },
+                    "style": {
+                      "type": "object",
+                      "properties": {
+                        "pressing": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "directness": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "tempo": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "line_height": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "required": [
+                        "pressing",
+                        "directness",
+                        "tempo",
+                        "line_height"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "players": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "short_name": {
+                            "type": "string"
+                          },
+                          "number": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 99
+                          },
+                          "position": {
+                            "type": "string",
+                            "enum": [
+                              "GK",
+                              "CB",
+                              "LB",
+                              "RB",
+                              "LWB",
+                              "RWB",
+                              "DM",
+                              "CM",
+                              "AM",
+                              "LM",
+                              "RM",
+                              "LW",
+                              "RW",
+                              "ST"
+                            ]
+                          },
+                          "side": {
+                            "type": "string",
+                            "enum": [
+                              "home",
+                              "away"
+                            ]
+                          },
+                          "starter": {
+                            "type": "boolean"
+                          },
+                          "attributes": {
+                            "type": "object",
+                            "properties": {
+                              "pace": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "passing": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "finishing": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "defending": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "stamina": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              },
+                              "goalkeeping": {
+                                "type": "number",
+                                "minimum": 0,
+                                "maximum": 100
+                              }
+                            },
+                            "required": [
+                              "pace",
+                              "passing",
+                              "finishing",
+                              "defending",
+                              "stamina",
+                              "goalkeeping"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "short_name",
+                          "number",
+                          "position",
+                          "side",
+                          "starter",
+                          "attributes"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "side",
+                    "name",
+                    "short",
+                    "colors",
+                    "formation",
+                    "style",
+                    "players"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "match_id",
+                "seed",
+                "scenario",
+                "title",
+                "synthetic",
+                "competition",
+                "stadium",
+                "city",
+                "weather",
+                "referee",
+                "kickoff_iso",
+                "home",
+                "away"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind",
+            "meta"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "event"
+            },
+            "event": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "pass"
+                    },
+                    "end_x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "end_y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "recipient_id": {
+                      "type": "string"
+                    },
+                    "outcome": {
+                      "type": "string",
+                      "enum": [
+                        "complete",
+                        "incomplete",
+                        "out"
+                      ]
+                    },
+                    "length_m": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "height": {
+                      "type": "string",
+                      "enum": [
+                        "ground",
+                        "low",
+                        "high"
+                      ]
+                    },
+                    "pass_kind": {
+                      "type": "string",
+                      "enum": [
+                        "short",
+                        "progressive",
+                        "long",
+                        "through",
+                        "cross",
+                        "switch",
+                        "back",
+                        "set_piece"
+                      ]
+                    },
+                    "ball_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "end_x",
+                    "end_y",
+                    "outcome",
+                    "length_m",
+                    "height",
+                    "pass_kind",
+                    "ball_speed_kmh"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "carry"
+                    },
+                    "end_x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "end_y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "distance_m": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "end_x",
+                    "end_y",
+                    "distance_m"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "dribble"
+                    },
+                    "opponent_id": {
+                      "type": "string"
+                    },
+                    "outcome": {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "fail"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "outcome"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "shot"
+                    },
+                    "end_x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "end_y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "outcome": {
+                      "type": "string",
+                      "enum": [
+                        "goal",
+                        "saved",
+                        "off_target",
+                        "blocked",
+                        "woodwork"
+                      ]
+                    },
+                    "body_part": {
+                      "type": "string",
+                      "enum": [
+                        "right_foot",
+                        "left_foot",
+                        "head"
+                      ]
+                    },
+                    "situation": {
+                      "type": "string",
+                      "enum": [
+                        "open_play",
+                        "counter",
+                        "set_piece",
+                        "penalty"
+                      ]
+                    },
+                    "ball_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "assist_id": {
+                      "type": "string"
+                    },
+                    "goalkeeper_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "outcome",
+                    "body_part",
+                    "situation",
+                    "ball_speed_kmh"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "goal"
+                    },
+                    "shot_event_id": {
+                      "type": "string"
+                    },
+                    "assist_id": {
+                      "type": "string"
+                    },
+                    "score": {
+                      "type": "object",
+                      "properties": {
+                        "home": {
+                          "type": "integer"
+                        },
+                        "away": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "home",
+                        "away"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "shot_event_id",
+                    "score"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "save"
+                    },
+                    "shot_event_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "shot_event_id"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "tackle"
+                    },
+                    "opponent_id": {
+                      "type": "string"
+                    },
+                    "outcome": {
+                      "type": "string",
+                      "enum": [
+                        "won",
+                        "lost"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "outcome"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "interception"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "clearance"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "block"
+                    },
+                    "shot_event_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "pressure"
+                    },
+                    "opponent_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "possession_change"
+                    },
+                    "from_team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string",
+                      "enum": [
+                        "kickoff",
+                        "interception",
+                        "tackle",
+                        "out_of_play",
+                        "foul",
+                        "shot",
+                        "goal",
+                        "save",
+                        "clearance",
+                        "offside",
+                        "miscontrol"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "foul"
+                    },
+                    "opponent_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "card"
+                    },
+                    "color": {
+                      "type": "string",
+                      "enum": [
+                        "yellow",
+                        "second_yellow",
+                        "red"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "color",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "substitution"
+                    },
+                    "player_in_id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "player_in_id"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "offside"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "set_piece"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "corner",
+                        "free_kick",
+                        "throw_in",
+                        "goal_kick",
+                        "penalty",
+                        "kickoff"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "kind"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "tactical_shift"
+                    },
+                    "formation_from": {
+                      "type": "string",
+                      "enum": [
+                        "4-3-3",
+                        "4-2-3-1",
+                        "4-4-2",
+                        "3-5-2",
+                        "5-4-1",
+                        "4-4-1",
+                        "4-2-4",
+                        "5-3-1"
+                      ]
+                    },
+                    "formation_to": {
+                      "type": "string",
+                      "enum": [
+                        "4-3-3",
+                        "4-2-3-1",
+                        "4-4-2",
+                        "3-5-2",
+                        "5-4-1",
+                        "4-4-1",
+                        "4-2-4",
+                        "5-3-1"
+                      ]
+                    },
+                    "pressing_from": {
+                      "type": "number"
+                    },
+                    "pressing_to": {
+                      "type": "number"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "formation_from",
+                    "formation_to",
+                    "pressing_from",
+                    "pressing_to",
+                    "note"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "period_start",
+                        "period_end"
+                      ]
+                    },
+                    "score": {
+                      "type": "object",
+                      "properties": {
+                        "home": {
+                          "type": "integer"
+                        },
+                        "away": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "home",
+                        "away"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "score"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "seq": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "match_id": {
+                      "type": "string"
+                    },
+                    "ts": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "game_s": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "period": {
+                      "type": "number",
+                      "enum": [
+                        1,
+                        2
+                      ]
+                    },
+                    "team": {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    "player_id": {
+                      "type": "string"
+                    },
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "possession_id": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "under_pressure": {
+                      "type": "boolean"
+                    },
+                    "player_speed_kmh": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "match_end"
+                    },
+                    "score": {
+                      "type": "object",
+                      "properties": {
+                        "home": {
+                          "type": "integer"
+                        },
+                        "away": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "home",
+                        "away"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "seq",
+                    "match_id",
+                    "ts",
+                    "game_s",
+                    "period",
+                    "possession_id",
+                    "type",
+                    "score"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "event"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "tracking"
+            },
+            "frame": {
+              "type": "object",
+              "properties": {
+                "match_id": {
+                  "type": "string"
+                },
+                "ts": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "game_s": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "period": {
+                  "type": "number",
+                  "enum": [
+                    1,
+                    2
+                  ]
+                },
+                "ball": {
+                  "type": "object",
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 105
+                    },
+                    "y": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 68
+                    },
+                    "z": {
+                      "type": "number",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "x",
+                    "y",
+                    "z"
+                  ],
+                  "additionalProperties": false
+                },
+                "possession": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "home",
+                        "away"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "players": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "side": {
+                        "type": "string",
+                        "enum": [
+                          "home",
+                          "away"
+                        ]
+                      },
+                      "x": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 105
+                      },
+                      "y": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 68
+                      },
+                      "s": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "side",
+                      "x",
+                      "y",
+                      "s"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "match_id",
+                "ts",
+                "game_s",
+                "period",
+                "ball",
+                "possession",
+                "players"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind",
+            "frame"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

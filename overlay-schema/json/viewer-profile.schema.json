@@ -1,0 +1,69 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/viewer-profile.schema.json",
+  "title": "ViewerProfile",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/ViewerProfile",
+  "definitions": {
+    "ViewerProfile": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "analyst",
+            "casual",
+            "club",
+            "player",
+            "metric"
+          ]
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "en",
+            "fr",
+            "es",
+            "hi",
+            "ar"
+          ]
+        },
+        "favorite_team": {
+          "type": "string",
+          "enum": [
+            "home",
+            "away"
+          ]
+        },
+        "focus_player_id": {
+          "type": "string"
+        },
+        "metric": {
+          "type": "string",
+          "enum": [
+            "ball_speed",
+            "pass_difficulty",
+            "player_speed",
+            "xg",
+            "ppda",
+            "momentum",
+            "tempo"
+          ]
+        },
+        "tts": {
+          "type": "boolean",
+          "default": false
+        },
+        "high_contrast": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "mode",
+        "language"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

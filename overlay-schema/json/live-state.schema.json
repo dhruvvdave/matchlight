@@ -1,0 +1,781 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/live-state.schema.json",
+  "title": "LiveState",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/LiveState",
+  "definitions": {
+    "LiveState": {
+      "type": "object",
+      "properties": {
+        "match_id": {
+          "type": "string"
+        },
+        "ts": {
+          "type": "number"
+        },
+        "game_s": {
+          "type": "number"
+        },
+        "period": {
+          "type": "number",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "minute_label": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pre",
+            "live",
+            "half_time",
+            "full_time"
+          ]
+        },
+        "score": {
+          "type": "object",
+          "properties": {
+            "home": {
+              "type": "integer"
+            },
+            "away": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "home",
+            "away"
+          ],
+          "additionalProperties": false
+        },
+        "possession": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "home",
+                "away"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ball": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "x",
+            "y"
+          ],
+          "additionalProperties": false
+        },
+        "teams": {
+          "type": "object",
+          "properties": {
+            "home": {
+              "type": "object",
+              "properties": {
+                "goals": {
+                  "type": "integer"
+                },
+                "shots": {
+                  "type": "integer"
+                },
+                "shots_on_target": {
+                  "type": "integer"
+                },
+                "xg": {
+                  "type": "number"
+                },
+                "xt": {
+                  "type": "number"
+                },
+                "passes": {
+                  "type": "integer"
+                },
+                "passes_completed": {
+                  "type": "integer"
+                },
+                "pass_accuracy": {
+                  "type": "number"
+                },
+                "avg_pass_length": {
+                  "type": "number"
+                },
+                "avg_pass_difficulty": {
+                  "type": "number"
+                },
+                "progressive_passes": {
+                  "type": "integer"
+                },
+                "final_third_entries": {
+                  "type": "integer"
+                },
+                "possession_pct": {
+                  "type": "number"
+                },
+                "ppda": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "ppda_10": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "pressures": {
+                  "type": "integer"
+                },
+                "tackles": {
+                  "type": "integer"
+                },
+                "interceptions": {
+                  "type": "integer"
+                },
+                "turnovers": {
+                  "type": "integer"
+                },
+                "high_turnovers": {
+                  "type": "integer"
+                },
+                "fouls": {
+                  "type": "integer"
+                },
+                "yellow": {
+                  "type": "integer"
+                },
+                "red": {
+                  "type": "integer"
+                },
+                "corners": {
+                  "type": "integer"
+                },
+                "offsides": {
+                  "type": "integer"
+                },
+                "top_ball_speed_kmh": {
+                  "type": "number"
+                },
+                "top_shot_speed_kmh": {
+                  "type": "number"
+                },
+                "top_player_speed_kmh": {
+                  "type": "number"
+                },
+                "distance_km": {
+                  "type": "number"
+                },
+                "field_tilt": {
+                  "type": "number"
+                },
+                "players_on_pitch": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "goals",
+                "shots",
+                "shots_on_target",
+                "xg",
+                "xt",
+                "passes",
+                "passes_completed",
+                "pass_accuracy",
+                "avg_pass_length",
+                "avg_pass_difficulty",
+                "progressive_passes",
+                "final_third_entries",
+                "possession_pct",
+                "ppda",
+                "ppda_10",
+                "pressures",
+                "tackles",
+                "interceptions",
+                "turnovers",
+                "high_turnovers",
+                "fouls",
+                "yellow",
+                "red",
+                "corners",
+                "offsides",
+                "top_ball_speed_kmh",
+                "top_shot_speed_kmh",
+                "top_player_speed_kmh",
+                "distance_km",
+                "field_tilt",
+                "players_on_pitch"
+              ],
+              "additionalProperties": false
+            },
+            "away": {
+              "type": "object",
+              "properties": {
+                "goals": {
+                  "type": "integer"
+                },
+                "shots": {
+                  "type": "integer"
+                },
+                "shots_on_target": {
+                  "type": "integer"
+                },
+                "xg": {
+                  "type": "number"
+                },
+                "xt": {
+                  "type": "number"
+                },
+                "passes": {
+                  "type": "integer"
+                },
+                "passes_completed": {
+                  "type": "integer"
+                },
+                "pass_accuracy": {
+                  "type": "number"
+                },
+                "avg_pass_length": {
+                  "type": "number"
+                },
+                "avg_pass_difficulty": {
+                  "type": "number"
+                },
+                "progressive_passes": {
+                  "type": "integer"
+                },
+                "final_third_entries": {
+                  "type": "integer"
+                },
+                "possession_pct": {
+                  "type": "number"
+                },
+                "ppda": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "ppda_10": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "pressures": {
+                  "type": "integer"
+                },
+                "tackles": {
+                  "type": "integer"
+                },
+                "interceptions": {
+                  "type": "integer"
+                },
+                "turnovers": {
+                  "type": "integer"
+                },
+                "high_turnovers": {
+                  "type": "integer"
+                },
+                "fouls": {
+                  "type": "integer"
+                },
+                "yellow": {
+                  "type": "integer"
+                },
+                "red": {
+                  "type": "integer"
+                },
+                "corners": {
+                  "type": "integer"
+                },
+                "offsides": {
+                  "type": "integer"
+                },
+                "top_ball_speed_kmh": {
+                  "type": "number"
+                },
+                "top_shot_speed_kmh": {
+                  "type": "number"
+                },
+                "top_player_speed_kmh": {
+                  "type": "number"
+                },
+                "distance_km": {
+                  "type": "number"
+                },
+                "field_tilt": {
+                  "type": "number"
+                },
+                "players_on_pitch": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "goals",
+                "shots",
+                "shots_on_target",
+                "xg",
+                "xt",
+                "passes",
+                "passes_completed",
+                "pass_accuracy",
+                "avg_pass_length",
+                "avg_pass_difficulty",
+                "progressive_passes",
+                "final_third_entries",
+                "possession_pct",
+                "ppda",
+                "ppda_10",
+                "pressures",
+                "tackles",
+                "interceptions",
+                "turnovers",
+                "high_turnovers",
+                "fouls",
+                "yellow",
+                "red",
+                "corners",
+                "offsides",
+                "top_ball_speed_kmh",
+                "top_shot_speed_kmh",
+                "top_player_speed_kmh",
+                "distance_km",
+                "field_tilt",
+                "players_on_pitch"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "home",
+            "away"
+          ],
+          "additionalProperties": false
+        },
+        "players": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "player_id": {
+                "type": "string"
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "home",
+                  "away"
+                ]
+              },
+              "on_pitch": {
+                "type": "boolean"
+              },
+              "minutes": {
+                "type": "number"
+              },
+              "touches": {
+                "type": "integer"
+              },
+              "passes": {
+                "type": "integer"
+              },
+              "passes_completed": {
+                "type": "integer"
+              },
+              "avg_pass_difficulty": {
+                "type": "number"
+              },
+              "hardest_pass": {
+                "type": "number"
+              },
+              "key_passes": {
+                "type": "integer"
+              },
+              "shots": {
+                "type": "integer"
+              },
+              "goals": {
+                "type": "integer"
+              },
+              "assists": {
+                "type": "integer"
+              },
+              "xg": {
+                "type": "number"
+              },
+              "xt": {
+                "type": "number"
+              },
+              "tackles": {
+                "type": "integer"
+              },
+              "interceptions": {
+                "type": "integer"
+              },
+              "pressures": {
+                "type": "integer"
+              },
+              "fouls": {
+                "type": "integer"
+              },
+              "cards": {
+                "type": "integer"
+              },
+              "distance_m": {
+                "type": "number"
+              },
+              "top_speed_kmh": {
+                "type": "number"
+              },
+              "sprints": {
+                "type": "integer"
+              },
+              "heat": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "rating": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "player_id",
+              "side",
+              "on_pitch",
+              "minutes",
+              "touches",
+              "passes",
+              "passes_completed",
+              "avg_pass_difficulty",
+              "hardest_pass",
+              "key_passes",
+              "shots",
+              "goals",
+              "assists",
+              "xg",
+              "xt",
+              "tackles",
+              "interceptions",
+              "pressures",
+              "fouls",
+              "cards",
+              "distance_m",
+              "top_speed_kmh",
+              "sprints",
+              "heat",
+              "rating"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "momentum": {
+          "type": "number"
+        },
+        "tempo": {
+          "type": "number"
+        },
+        "control": {
+          "type": "number"
+        },
+        "series": {
+          "type": "object",
+          "properties": {
+            "momentum": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "minute": {
+                    "type": "number"
+                  },
+                  "v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "minute",
+                  "v"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "xg_home": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "minute": {
+                    "type": "number"
+                  },
+                  "v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "minute",
+                  "v"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "xg_away": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "minute": {
+                    "type": "number"
+                  },
+                  "v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "minute",
+                  "v"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "ppda_home": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "minute": {
+                    "type": "number"
+                  },
+                  "v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "minute",
+                  "v"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "ppda_away": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "minute": {
+                    "type": "number"
+                  },
+                  "v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "minute",
+                  "v"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "tempo": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "minute": {
+                    "type": "number"
+                  },
+                  "v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "minute",
+                  "v"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "control": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "ts": {
+                    "type": "number"
+                  },
+                  "minute": {
+                    "type": "number"
+                  },
+                  "v": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "ts",
+                  "minute",
+                  "v"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "momentum",
+            "xg_home",
+            "xg_away",
+            "ppda_home",
+            "ppda_away",
+            "tempo",
+            "control"
+          ],
+          "additionalProperties": false
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "top_speed",
+                  "shot_speed",
+                  "ball_speed",
+                  "distance_milestone",
+                  "difficult_pass",
+                  "long_pass",
+                  "ppda_shift",
+                  "momentum_swing",
+                  "tempo_spike",
+                  "chaos_spike",
+                  "xg_swing",
+                  "possession_dominance",
+                  "player_milestone"
+                ]
+              },
+              "ts": {
+                "type": "number"
+              },
+              "team": {
+                "type": "string",
+                "enum": [
+                  "home",
+                  "away"
+                ]
+              },
+              "player_id": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "previous": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": "number"
+              },
+              "unit": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "event_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "ts",
+              "value",
+              "threshold",
+              "unit",
+              "label",
+              "event_ids"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "event_count": {
+          "type": "integer"
+        },
+        "last_event_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "match_id",
+        "ts",
+        "game_s",
+        "period",
+        "minute_label",
+        "status",
+        "score",
+        "possession",
+        "ball",
+        "teams",
+        "players",
+        "momentum",
+        "tempo",
+        "control",
+        "series",
+        "flags",
+        "event_count",
+        "last_event_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

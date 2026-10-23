@@ -1,0 +1,132 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/feed-item.schema.json",
+  "title": "FeedItem",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/FeedItem",
+  "definitions": {
+    "FeedItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "profile_key": {
+          "type": "string"
+        },
+        "ts": {
+          "type": "number"
+        },
+        "minute_label": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "commentary",
+            "key_moment",
+            "stat",
+            "milestone",
+            "system",
+            "answer",
+            "recap"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "lang": {
+          "type": "string",
+          "enum": [
+            "en",
+            "fr",
+            "es",
+            "hi",
+            "ar"
+          ]
+        },
+        "dir": {
+          "type": "string",
+          "enum": [
+            "ltr",
+            "rtl"
+          ]
+        },
+        "emphasis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "team": {
+          "type": "string",
+          "enum": [
+            "home",
+            "away"
+          ]
+        },
+        "player_id": {
+          "type": "string"
+        },
+        "explanation_id": {
+          "type": "string"
+        },
+        "moment_id": {
+          "type": "string"
+        },
+        "moment_kind": {
+          "type": "string"
+        },
+        "event_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "llm",
+            "template",
+            "translator"
+          ]
+        },
+        "supersedes": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "value"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "id",
+        "profile_key",
+        "ts",
+        "minute_label",
+        "kind",
+        "text",
+        "lang",
+        "dir",
+        "emphasis",
+        "event_ids",
+        "source"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

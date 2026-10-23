@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "noEmit": true },
+  "include": [
+    "overlay-schema/src",
+    "overlay-schema/scripts",
+    "simulator/src",
+    "pipeline/src",
+    "agents/src",
+    "api/src",
+    "tests",
+    "vitest.config.ts"
+  ]
+}

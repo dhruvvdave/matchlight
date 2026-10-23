@@ -1,0 +1,8 @@
+node_modules
+dist
+coverage
+package-lock.json
+overlay-schema/json
+tests/golden
+data
+.azure

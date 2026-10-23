@@ -1,0 +1,48 @@
+{
+  "name": "matchlight",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Multi-agent match intelligence engine for synthetic football streams",
+  "type": "module",
+  "workspaces": [
+    "overlay-schema",
+    "simulator",
+    "pipeline",
+    "agents",
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c cyan,magenta \"npm run dev -w @matchlight/api\" \"npm run dev -w @matchlight/web\"",
+    "start": "npm run start -w @matchlight/api",
+    "build": "npm run build -w @matchlight/web && npm run build -w @matchlight/api",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "golden:update": "UPDATE_GOLDEN=1 vitest run tests/golden.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p web/tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "schema:gen": "tsx overlay-schema/scripts/generate.ts",
+    "simulate": "tsx simulator/src/cli.ts",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.16.0",
+    "@types/node": "22.10.1",
+    "@types/ws": "8.5.13",
+    "concurrently": "9.1.0",
+    "esbuild": "0.24.0",
+    "eslint": "9.16.0",
+    "eslint-plugin-react-hooks": "5.1.0",
+    "globals": "15.13.0",
+    "prettier": "3.4.2",
+    "tsx": "4.19.2",
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.17.0",
+    "vitest": "2.1.8"
+  }
+}

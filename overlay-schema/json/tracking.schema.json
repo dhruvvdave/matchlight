@@ -1,0 +1,121 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/tracking.schema.json",
+  "title": "TrackingFrame",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/TrackingFrame",
+  "definitions": {
+    "TrackingFrame": {
+      "type": "object",
+      "properties": {
+        "match_id": {
+          "type": "string"
+        },
+        "ts": {
+          "type": "number",
+          "minimum": 0
+        },
+        "game_s": {
+          "type": "number",
+          "minimum": 0
+        },
+        "period": {
+          "type": "number",
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "ball": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 105
+            },
+            "y": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 68
+            },
+            "z": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "x",
+            "y",
+            "z"
+          ],
+          "additionalProperties": false
+        },
+        "possession": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "home",
+                "away"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "players": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "home",
+                  "away"
+                ]
+              },
+              "x": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 105
+              },
+              "y": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 68
+              },
+              "s": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "id",
+              "side",
+              "x",
+              "y",
+              "s"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "match_id",
+        "ts",
+        "game_s",
+        "period",
+        "ball",
+        "possession",
+        "players"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

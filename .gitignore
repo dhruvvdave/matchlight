@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.local
+*.log
+.azure/
+data/runs/
+web/dist/
+api/dist/
+.DS_Store
+test-results/
+playwright-report/
