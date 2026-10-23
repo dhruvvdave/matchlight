@@ -222,10 +222,8 @@ export class RendererAgent {
       case 'pressing_shift': {
         const p = f('ppda_change');
         if (!p) return null;
-        const series = this.s
-          .getSeries()
-          [p.team === 'away' ? 'ppda_away' : 'ppda_home'].slice(-15)
-          .map((x) => x.v);
+        const all = this.s.getSeries();
+        const series = (p.team === 'away' ? all.ppda_away : all.ppda_home).slice(-15).map((x) => x.v);
         return {
           metric: 'ppda',
           label: `${label(lang, 'ppda')} (${label(lang, 'last_10')})`,
