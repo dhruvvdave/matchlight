@@ -1,0 +1,22 @@
+{
+  "name": "@matchlight/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/server.ts",
+    "start": "tsx src/server.ts",
+    "build": "esbuild src/server.ts --bundle --platform=node --format=esm --target=node20 --outfile=dist/server.mjs --packages=external --alias:@matchlight/schema=../overlay-schema/src/index.ts --alias:@matchlight/simulator=../simulator/src/index.ts --alias:@matchlight/pipeline=../pipeline/src/index.ts --alias:@matchlight/agents=../agents/src/index.ts"
+  },
+  "dependencies": {
+    "@azure/cosmos": "4.2.0",
+    "@azure/identity": "4.5.0",
+    "@azure/web-pubsub": "1.1.3",
+    "@matchlight/agents": "0.1.0",
+    "@matchlight/pipeline": "0.1.0",
+    "@matchlight/schema": "0.1.0",
+    "@matchlight/simulator": "0.1.0",
+    "ws": "8.18.0",
+    "zod": "3.23.8"
+  }
+}

@@ -1,0 +1,27 @@
+# One command: `docker compose up` -> http://localhost:8787
+# Offline by default (mock LLM, local Web PubSub emulator, in-memory store). Put Azure settings in .env to go live.
+# Add the Microsoft Agent Framework sidecar with: `docker compose --profile maf up`
+services:
+  matchlight:
+    build:
+      context: .
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-alpine}
+    ports:
+      - '8787:8787'
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      PORT: '8787'
+      MAF_ENDPOINT: ${MAF_ENDPOINT:-}
+    restart: unless-stopped
+
+  maf:
+    profiles: ['maf']
+    build: ./agents-maf
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      PORT: '8790'

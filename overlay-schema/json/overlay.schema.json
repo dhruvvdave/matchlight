@@ -1,0 +1,1112 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/overlay.schema.json",
+  "title": "Overlay",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/Overlay",
+  "definitions": {
+    "Overlay": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "schema_version": {
+              "type": "string"
+            },
+            "match_id": {
+              "type": "string"
+            },
+            "profile_key": {
+              "type": "string"
+            },
+            "start_ts": {
+              "type": "number",
+              "minimum": 0
+            },
+            "duration": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "region": {
+              "type": "string",
+              "enum": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "left_rail",
+                "right_rail",
+                "center",
+                "lower_third",
+                "pitch"
+              ]
+            },
+            "position": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "w": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "h": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h"
+              ],
+              "additionalProperties": false
+            },
+            "debounce_key": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr",
+                "es",
+                "hi",
+                "ar"
+              ]
+            },
+            "dir": {
+              "type": "string",
+              "enum": [
+                "ltr",
+                "rtl"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": [
+                "broadcast",
+                "high_contrast"
+              ]
+            },
+            "aria_label": {
+              "type": "string"
+            },
+            "source_event_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "explanation_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "lower_third"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "type": "string"
+                },
+                "team": {
+                  "type": "string",
+                  "enum": [
+                    "home",
+                    "away"
+                  ]
+                },
+                "accent": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "schema_version",
+            "match_id",
+            "profile_key",
+            "start_ts",
+            "duration",
+            "priority",
+            "region",
+            "position",
+            "debounce_key",
+            "language",
+            "dir",
+            "theme",
+            "aria_label",
+            "source_event_ids",
+            "kind",
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "schema_version": {
+              "type": "string"
+            },
+            "match_id": {
+              "type": "string"
+            },
+            "profile_key": {
+              "type": "string"
+            },
+            "start_ts": {
+              "type": "number",
+              "minimum": 0
+            },
+            "duration": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "region": {
+              "type": "string",
+              "enum": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "left_rail",
+                "right_rail",
+                "center",
+                "lower_third",
+                "pitch"
+              ]
+            },
+            "position": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "w": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "h": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h"
+              ],
+              "additionalProperties": false
+            },
+            "debounce_key": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr",
+                "es",
+                "hi",
+                "ar"
+              ]
+            },
+            "dir": {
+              "type": "string",
+              "enum": [
+                "ltr",
+                "rtl"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": [
+                "broadcast",
+                "high_contrast"
+              ]
+            },
+            "aria_label": {
+              "type": "string"
+            },
+            "source_event_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "explanation_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "player_tag"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "player_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "number": {
+                  "type": "integer"
+                },
+                "team": {
+                  "type": "string",
+                  "enum": [
+                    "home",
+                    "away"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "player_id",
+                "name",
+                "number",
+                "team"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "schema_version",
+            "match_id",
+            "profile_key",
+            "start_ts",
+            "duration",
+            "priority",
+            "region",
+            "position",
+            "debounce_key",
+            "language",
+            "dir",
+            "theme",
+            "aria_label",
+            "source_event_ids",
+            "kind",
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "schema_version": {
+              "type": "string"
+            },
+            "match_id": {
+              "type": "string"
+            },
+            "profile_key": {
+              "type": "string"
+            },
+            "start_ts": {
+              "type": "number",
+              "minimum": 0
+            },
+            "duration": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "region": {
+              "type": "string",
+              "enum": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "left_rail",
+                "right_rail",
+                "center",
+                "lower_third",
+                "pitch"
+              ]
+            },
+            "position": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "w": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "h": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h"
+              ],
+              "additionalProperties": false
+            },
+            "debounce_key": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr",
+                "es",
+                "hi",
+                "ar"
+              ]
+            },
+            "dir": {
+              "type": "string",
+              "enum": [
+                "ltr",
+                "rtl"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": [
+                "broadcast",
+                "high_contrast"
+              ]
+            },
+            "aria_label": {
+              "type": "string"
+            },
+            "source_event_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "explanation_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "stat_badge"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "metric": {
+                  "type": "string",
+                  "enum": [
+                    "player_speed",
+                    "ball_speed",
+                    "shot_speed",
+                    "distance",
+                    "pass_difficulty",
+                    "xg",
+                    "ppda",
+                    "tempo",
+                    "momentum",
+                    "possession"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                },
+                "display": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "team": {
+                  "type": "string",
+                  "enum": [
+                    "home",
+                    "away"
+                  ]
+                },
+                "player_id": {
+                  "type": "string"
+                },
+                "trend": {
+                  "type": "string",
+                  "enum": [
+                    "up",
+                    "down",
+                    "flat"
+                  ]
+                },
+                "series": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              },
+              "required": [
+                "metric",
+                "label",
+                "value",
+                "display",
+                "unit"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "schema_version",
+            "match_id",
+            "profile_key",
+            "start_ts",
+            "duration",
+            "priority",
+            "region",
+            "position",
+            "debounce_key",
+            "language",
+            "dir",
+            "theme",
+            "aria_label",
+            "source_event_ids",
+            "kind",
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "schema_version": {
+              "type": "string"
+            },
+            "match_id": {
+              "type": "string"
+            },
+            "profile_key": {
+              "type": "string"
+            },
+            "start_ts": {
+              "type": "number",
+              "minimum": 0
+            },
+            "duration": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "region": {
+              "type": "string",
+              "enum": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "left_rail",
+                "right_rail",
+                "center",
+                "lower_third",
+                "pitch"
+              ]
+            },
+            "position": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "w": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "h": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h"
+              ],
+              "additionalProperties": false
+            },
+            "debounce_key": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr",
+                "es",
+                "hi",
+                "ar"
+              ]
+            },
+            "dir": {
+              "type": "string",
+              "enum": [
+                "ltr",
+                "rtl"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": [
+                "broadcast",
+                "high_contrast"
+              ]
+            },
+            "aria_label": {
+              "type": "string"
+            },
+            "source_event_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "explanation_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "momentum_bar"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "number",
+                  "minimum": -100,
+                  "maximum": 100
+                },
+                "home_label": {
+                  "type": "string"
+                },
+                "away_label": {
+                  "type": "string"
+                },
+                "home_color": {
+                  "type": "string"
+                },
+                "away_color": {
+                  "type": "string"
+                },
+                "series": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              },
+              "required": [
+                "value",
+                "home_label",
+                "away_label",
+                "home_color",
+                "away_color",
+                "series"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "schema_version",
+            "match_id",
+            "profile_key",
+            "start_ts",
+            "duration",
+            "priority",
+            "region",
+            "position",
+            "debounce_key",
+            "language",
+            "dir",
+            "theme",
+            "aria_label",
+            "source_event_ids",
+            "kind",
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "schema_version": {
+              "type": "string"
+            },
+            "match_id": {
+              "type": "string"
+            },
+            "profile_key": {
+              "type": "string"
+            },
+            "start_ts": {
+              "type": "number",
+              "minimum": 0
+            },
+            "duration": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "region": {
+              "type": "string",
+              "enum": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "left_rail",
+                "right_rail",
+                "center",
+                "lower_third",
+                "pitch"
+              ]
+            },
+            "position": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "w": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "h": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h"
+              ],
+              "additionalProperties": false
+            },
+            "debounce_key": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr",
+                "es",
+                "hi",
+                "ar"
+              ]
+            },
+            "dir": {
+              "type": "string",
+              "enum": [
+                "ltr",
+                "rtl"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": [
+                "broadcast",
+                "high_contrast"
+              ]
+            },
+            "aria_label": {
+              "type": "string"
+            },
+            "source_event_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "explanation_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "pass_map"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "team": {
+                  "type": "string",
+                  "enum": [
+                    "home",
+                    "away"
+                  ]
+                },
+                "player_id": {
+                  "type": "string"
+                },
+                "passes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "x": {
+                        "type": "number"
+                      },
+                      "y": {
+                        "type": "number"
+                      },
+                      "end_x": {
+                        "type": "number"
+                      },
+                      "end_y": {
+                        "type": "number"
+                      },
+                      "complete": {
+                        "type": "boolean"
+                      },
+                      "difficulty": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "x",
+                      "y",
+                      "end_x",
+                      "end_y",
+                      "complete",
+                      "difficulty"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "maxItems": 16
+                }
+              },
+              "required": [
+                "title",
+                "team",
+                "passes"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "schema_version",
+            "match_id",
+            "profile_key",
+            "start_ts",
+            "duration",
+            "priority",
+            "region",
+            "position",
+            "debounce_key",
+            "language",
+            "dir",
+            "theme",
+            "aria_label",
+            "source_event_ids",
+            "kind",
+            "content"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "schema_version": {
+              "type": "string"
+            },
+            "match_id": {
+              "type": "string"
+            },
+            "profile_key": {
+              "type": "string"
+            },
+            "start_ts": {
+              "type": "number",
+              "minimum": 0
+            },
+            "duration": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "region": {
+              "type": "string",
+              "enum": [
+                "top_left",
+                "top_center",
+                "top_right",
+                "left_rail",
+                "right_rail",
+                "center",
+                "lower_third",
+                "pitch"
+              ]
+            },
+            "position": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "y": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "w": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "h": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "w",
+                "h"
+              ],
+              "additionalProperties": false
+            },
+            "debounce_key": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "fr",
+                "es",
+                "hi",
+                "ar"
+              ]
+            },
+            "dir": {
+              "type": "string",
+              "enum": [
+                "ltr",
+                "rtl"
+              ]
+            },
+            "theme": {
+              "type": "string",
+              "enum": [
+                "broadcast",
+                "high_contrast"
+              ]
+            },
+            "aria_label": {
+              "type": "string"
+            },
+            "source_event_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "explanation_id": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string",
+              "const": "key_moment_card"
+            },
+            "content": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "body": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "confidence": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "icon": {
+                  "type": "string",
+                  "enum": [
+                    "goal",
+                    "card",
+                    "chance",
+                    "tactic",
+                    "momentum",
+                    "speed",
+                    "pass",
+                    "sub",
+                    "save",
+                    "info"
+                  ]
+                },
+                "team": {
+                  "type": "string",
+                  "enum": [
+                    "home",
+                    "away"
+                  ]
+                }
+              },
+              "required": [
+                "title",
+                "body",
+                "evidence",
+                "icon"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "schema_version",
+            "match_id",
+            "profile_key",
+            "start_ts",
+            "duration",
+            "priority",
+            "region",
+            "position",
+            "debounce_key",
+            "language",
+            "dir",
+            "theme",
+            "aria_label",
+            "source_event_ids",
+            "kind",
+            "content"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

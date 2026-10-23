@@ -1,0 +1,82 @@
+{
+  "$id": "https://matchlight.dev/schema/1.0.0/trace-span.schema.json",
+  "title": "TraceSpan",
+  "x-schema-version": "1.0.0",
+  "$ref": "#/definitions/TraceSpan",
+  "definitions": {
+    "TraceSpan": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "trace_id": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string"
+        },
+        "agent": {
+          "type": "string",
+          "enum": [
+            "ingest",
+            "interpret",
+            "director",
+            "stats",
+            "explainer",
+            "critic",
+            "narrator",
+            "personalizer",
+            "translator",
+            "renderer",
+            "recap",
+            "ask",
+            "tts"
+          ]
+        },
+        "op": {
+          "type": "string"
+        },
+        "ts": {
+          "type": "number"
+        },
+        "wall_ms": {
+          "type": "number"
+        },
+        "latency_ms": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "rejected",
+            "fallback",
+            "error",
+            "skipped"
+          ]
+        },
+        "summary": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "object",
+          "additionalProperties": {}
+        }
+      },
+      "required": [
+        "id",
+        "trace_id",
+        "agent",
+        "op",
+        "ts",
+        "wall_ms",
+        "latency_ms",
+        "status",
+        "summary"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
