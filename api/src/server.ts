@@ -117,6 +117,7 @@ export async function startServer(
         return send(res, 200, {
           llm: agents.describe.llm,
           translator: agents.describe.translator,
+          orchestration: agents.describe.orchestration,
           tts: cfg.speech ? 'Azure AI Speech' : 'browser speechSynthesis (offline)',
           transport: hub.kind === 'local-ws' ? 'local Web PubSub emulator (WebSocket)' : 'Azure Web PubSub',
           store: store.kind === 'cosmos' ? 'Azure Cosmos DB' : 'in-memory',

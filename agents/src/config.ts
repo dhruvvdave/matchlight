@@ -6,7 +6,9 @@ export interface AgentConfig {
   translator: TranslatorAgent;
   hallucinationRate: number;
   narrativeBudgetMs: number;
-  describe: { llm: string; translator: string };
+  /** Microsoft Agent Framework sidecar running the Explainer <-> Critic workflow (agents-maf/). */
+  mafEndpoint?: string;
+  describe: { llm: string; translator: string; orchestration: string };
 }
 
 /**
@@ -46,7 +48,11 @@ export function agentConfigFromEnv(env: NodeJS.ProcessEnv = process.env): AgentC
     translator,
     hallucinationRate: Number(env.MOCK_HALLUCINATION_RATE ?? (llm.provider === 'mock' ? 0.2 : 0)),
     narrativeBudgetMs: Number(env.NARRATIVE_BUDGET_MS ?? 6000),
+    mafEndpoint: env.MAF_ENDPOINT || undefined,
     describe: {
+      orchestration: env.MAF_ENDPOINT
+        ? 'Microsoft Agent Framework workflow (sidecar) + TS runtime'
+        : 'TS agent runtime (MAF-style contracts)',
       llm: llm.provider === 'mock' ? 'mock (offline, deterministic)' : `Azure OpenAI (${llm.model})`,
       translator: translator.provider?.name ?? 'offline localised templates',
     },

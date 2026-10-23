@@ -4,6 +4,7 @@
   "parameters": {
     "environmentName": { "value": "${AZURE_ENV_NAME}" },
     "location": { "value": "${AZURE_LOCATION}" },
-    "apiImage": { "value": "${SERVICE_API_IMAGE_NAME=}" }
+    "apiImage": { "value": "${SERVICE_API_IMAGE_NAME=}" },
+    "mafImage": { "value": "${SERVICE_MAF_IMAGE_NAME=}" }
   }
 }

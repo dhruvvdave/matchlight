@@ -179,7 +179,12 @@ export class ExplainerAgent {
     private readonly llm: LlmClient,
     private readonly critic: CriticAgent,
     private readonly tracer: Tracer,
-    private readonly opts: { maxAttempts: number; hallucinationRate: number; timeoutMs: number },
+    private readonly opts: {
+      maxAttempts: number;
+      hallucinationRate: number;
+      timeoutMs: number;
+      mafEndpoint?: string;
+    },
     extraTools: Tool[] = [],
   ) {
     this.tools = [
@@ -234,6 +239,10 @@ export class ExplainerAgent {
       allowedPlayers,
       knownEventIds: (id) => this.s.byId.has(id),
     };
+    if (this.opts.mafEndpoint) {
+      const viaMaf = await this.explainViaMaf(m, facts, ctx, traceId, parentId);
+      if (viaMaf) return viaMaf;
+    }
     let attempts = 0;
     let lastIssues: Explanation['critic']['issues'] = [];
     let feedback = '';
@@ -326,6 +335,101 @@ export class ExplainerAgent {
       parentId,
     );
     return { explanation: this.finalise(m, facts, tpl, 'template', attempts, lastIssues), attempts };
+  }
+
+  /**
+   * Delegate the Explainer <-> Critic loop to the Microsoft Agent Framework sidecar (agents-maf/).
+   * Its result is re-verified by this process's Critic before use (defence in depth).
+   */
+  private async explainViaMaf(
+    m: Moment,
+    facts: Fact[],
+    ctx: GroundingContext,
+    traceId: string,
+    parentId?: string,
+  ): Promise<ExplainResult | null> {
+    const names = (ids: Iterable<string>) =>
+      [...ids].map((id) => this.s.player(id)?.name).filter((n): n is string => !!n);
+    const everyone = [...this.s.meta.home.players, ...this.s.meta.away.players].map((p) => p.id);
+    try {
+      const res = await this.tracer.span(
+        'explainer',
+        'maf workflow',
+        traceId,
+        async (h) => {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), this.opts.timeoutMs * 2);
+          try {
+            const r = await fetch(`${this.opts.mafEndpoint!.replace(/\/$/, '')}/explain`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              signal: ctrl.signal,
+              body: JSON.stringify({
+                moment: { id: m.id, kind: m.kind, minute_label: m.minute_label, headline: m.headline },
+                facts,
+                allowed_names: names(ctx.allowedPlayers),
+                disallowed_names: names(everyone.filter((id) => !ctx.allowedPlayers.has(id))),
+                known_event_ids: [...new Set([...m.event_ids, ...facts.flatMap((f) => f.event_ids)])],
+                max_attempts: this.opts.maxAttempts,
+              }),
+            });
+            if (!r.ok) throw new Error(`MAF sidecar ${r.status}`);
+            const body = (await r.json()) as {
+              draft: unknown;
+              grounded: boolean;
+              attempts: number;
+              issues: Explanation['critic']['issues'];
+              events: { agent: 'explainer' | 'critic'; op: string; status?: string; summary: string }[];
+            };
+            for (const e of body.events)
+              this.tracer.point(
+                e.agent,
+                `maf:${e.op}`,
+                traceId,
+                e.summary,
+                undefined,
+                e.status === 'rejected' ? 'rejected' : 'ok',
+                h.id,
+              );
+            h.summary(
+              `Microsoft Agent Framework workflow: ${body.attempts} attempt(s), ${body.grounded ? 'grounded' : 'not grounded'}`,
+            );
+            return body;
+          } finally {
+            clearTimeout(timer);
+          }
+        },
+        parentId,
+      );
+      const verdict = this.critic.checkExplanation(res.draft, ctx);
+      this.tracer.point(
+        'critic',
+        're-verify',
+        traceId,
+        verdict.ok
+          ? 'MAF result re-verified in-process'
+          : `MAF result REJECTED in-process: ${verdict.issues.map((i) => i.detail).join('; ')}`,
+        undefined,
+        verdict.ok ? 'ok' : 'rejected',
+        parentId,
+      );
+      if (!verdict.ok || !verdict.draft) return null;
+      return {
+        explanation: this.finalise(m, facts, verdict.draft, 'llm', res.attempts, res.issues ?? []),
+        attempts: res.attempts,
+      };
+    } catch (e) {
+      this.tracer.point(
+        'explainer',
+        'maf unavailable',
+        traceId,
+        `MAF sidecar failed (${(e as Error).message}); using in-process loop`,
+        undefined,
+        'fallback',
+        parentId,
+      );
+      return null;
+    }
   }
 
   private prompt(m: Moment, facts: Fact[], feedback: string): string {

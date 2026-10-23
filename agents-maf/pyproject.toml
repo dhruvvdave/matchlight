@@ -1,0 +1,17 @@
+[project]
+name = "matchlight-maf"
+version = "0.1.0"
+description = "Matchlight Explainer <-> Critic workflow on Microsoft Agent Framework (optional sidecar)"
+requires-python = ">=3.10"
+dependencies = [
+  "agent-framework-core==1.23.0",
+  "agent-framework-openai==1.17.0",
+  "azure-identity>=1.17",
+  "aiohttp>=3.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

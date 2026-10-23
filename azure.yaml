@@ -13,6 +13,13 @@ services:
     docker:
       path: ./Dockerfile
       remoteBuild: true
+  maf:
+    project: ./agents-maf
+    language: python
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
   web:
     project: ./web
     language: js

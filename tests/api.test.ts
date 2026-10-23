@@ -3,6 +3,11 @@ import WebSocket from 'ws';
 import type { GroupMessage } from '@matchlight/schema';
 import { startServer, type AppHandle } from '../api/src/server.js';
 
+// Loosely-typed JSON for terse assertions on HTTP responses.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Json = any;
+const json = (r: Response): Promise<Json> => r.json();
+
 let app: AppHandle;
 let base: string;
 
@@ -18,14 +23,14 @@ const post = (path: string, body: unknown) =>
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
-  }).then(async (r) => ({ status: r.status, json: await r.json() }));
+  }).then(async (r) => ({ status: r.status, json: (await r.json()) as Json }));
 
 describe('API + Web PubSub-compatible push (integration)', () => {
   it('serves health, config and scenarios', async () => {
-    expect((await fetch(`${base}/healthz`).then((r) => r.json())).ok).toBe(true);
-    const cfg = await fetch(`${base}/api/config`).then((r) => r.json());
+    expect((await fetch(`${base}/healthz`).then(json)).ok).toBe(true);
+    const cfg = await fetch(`${base}/api/config`).then(json);
     expect(cfg.synthetic).toBe(true);
-    const sc = await fetch(`${base}/api/scenarios`).then((r) => r.json());
+    const sc = await fetch(`${base}/api/scenarios`).then(json);
     expect(sc.map((s: { id: string }) => s.id)).toEqual([
       'late-comeback',
       'red-card-collapse',
@@ -54,7 +59,7 @@ describe('API + Web PubSub-compatible push (integration)', () => {
     expect(prof.json.profile_key).toBe('analyst.en');
     const neg = await fetch(
       `${base}/api/negotiate?session=${sid}&groups=${created.json.group},${prof.json.group}`,
-    ).then((r) => r.json());
+    ).then(json);
     const ws = new WebSocket(neg.url, 'json.webpubsub.azure.v1');
     const got: GroupMessage[] = [];
     const acks: boolean[] = [];
@@ -89,7 +94,7 @@ describe('API + Web PubSub-compatible push (integration)', () => {
     expect(ans.json.intent).toBe('score');
     const jsonl = await fetch(`${base}/api/sessions/${sid}/events.jsonl`).then((r) => r.text());
     expect(jsonl.split('\n')[0]).toContain('"kind":"meta"');
-    const summary = await fetch(`${base}/api/sessions/${sid}`).then((r) => r.json());
+    const summary = await fetch(`${base}/api/sessions/${sid}`).then(json);
     expect(summary.latency.fast_path.p95).toBeLessThan(1500);
   });
 
@@ -115,11 +120,11 @@ describe('API + Web PubSub-compatible push (integration)', () => {
     const sid = created.json.session_id;
     await post(`/api/sessions/${sid}/control`, { action: 'play' });
     for (let i = 0; i < 100; i++) {
-      const s = await fetch(`${base}/api/sessions/${sid}`).then((r) => r.json());
+      const s = await fetch(`${base}/api/sessions/${sid}`).then(json);
       if (s.clock.finished) break;
       await new Promise((r) => setTimeout(r, 100));
     }
-    const recap = await fetch(`${base}/api/sessions/${sid}/recap?lang=es`).then((r) => r.json());
+    const recap = await fetch(`${base}/api/sessions/${sid}/recap?lang=es`).then(json);
     expect(recap.final_score).toEqual({ home: 0, away: 0 });
     expect(recap.lang).toBe('es');
     const md = await fetch(`${base}/api/sessions/${sid}/recap?format=md`).then((r) => r.text());

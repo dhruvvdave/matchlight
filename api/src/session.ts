@@ -70,6 +70,7 @@ export class MatchSession {
       translator: a.translator,
       hallucinationRate: a.hallucinationRate,
       narrativeBudgetMs: a.narrativeBudgetMs,
+      mafEndpoint: a.mafEndpoint,
       publish: (m) => this.route(m),
     });
     this.orchestrator.setSpeed(this.replayer.clock.speed);

@@ -47,6 +47,8 @@ export interface OrchestratorOptions {
   /** Max wall ms for an LLM narrative to replace the template line before we give up. */
   narrativeBudgetMs?: number;
   explainTimeoutMs?: number;
+  /** Delegate Explainer <-> Critic to the Microsoft Agent Framework sidecar. */
+  mafEndpoint?: string;
   wallNow?: () => number;
 }
 
@@ -136,6 +138,7 @@ export class MatchOrchestrator {
         maxAttempts: 3,
         hallucinationRate: opts.hallucinationRate ?? 0,
         timeoutMs: opts.explainTimeoutMs ?? 8000,
+        mafEndpoint: opts.mafEndpoint,
       },
       this.statsAgent.tools,
     );

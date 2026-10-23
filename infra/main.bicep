@@ -20,6 +20,9 @@ param openAiCapacity int = 30
 @description('Container image for the API (set by azd deploy)')
 param apiImage string = ''
 
+@description('Container image for the Microsoft Agent Framework sidecar (set by azd deploy)')
+param mafImage string = ''
+
 var tags = { 'azd-env-name': environmentName, app: 'matchlight' }
 var token = toLower(uniqueString(subscription().id, environmentName, location))
 
@@ -41,6 +44,7 @@ module resources 'resources.bicep' = {
     openAiModelVersion: openAiModelVersion
     openAiCapacity: openAiCapacity
     apiImage: apiImage
+    mafImage: mafImage
   }
 }
 

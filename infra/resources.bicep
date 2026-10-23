@@ -6,6 +6,7 @@ param openAiModel string
 param openAiModelVersion string
 param openAiCapacity int
 param apiImage string
+param mafImage string
 
 // ───────── Observability ─────────
 resource logs 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
@@ -166,6 +167,7 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'COSMOS_DATABASE', value: 'matchlight' }
             { name: 'CORS_ORIGIN', value: 'https://${web.properties.defaultHostname}' }
             { name: 'TRACE_LOG', value: '1' }
+            { name: 'MAF_ENDPOINT', value: 'http://${maf.name}' }
             { name: 'APPLICATIONINSIGHTS_CONNECTION_STRING', value: appInsights.properties.ConnectionString }
           ]
           probes: [{ type: 'Liveness', httpGet: { path: '/healthz', port: 8787 }, periodSeconds: 30 }]
@@ -173,6 +175,39 @@ resource api 'Microsoft.App/containerApps@2024-03-01' = {
       ]
       // Live match sessions are held in memory by the replica that created them; keep a single replica.
       scale: { minReplicas: 1, maxReplicas: 1 }
+    }
+  }
+  dependsOn: [acrPull]
+}
+
+// ───────── Microsoft Agent Framework sidecar (Explainer <-> Critic workflow), internal only ─────────
+resource maf 'Microsoft.App/containerApps@2024-03-01' = {
+  name: 'ca-ml-maf-${token}'
+  location: location
+  tags: union(tags, { 'azd-service-name': 'maf' })
+  identity: { type: 'UserAssigned', userAssignedIdentities: { '${identity.id}': {} } }
+  properties: {
+    managedEnvironmentId: env.id
+    configuration: {
+      ingress: { external: false, targetPort: 8790, transport: 'http' }
+      registries: [{ server: registry.properties.loginServer, identity: identity.id }]
+    }
+    template: {
+      containers: [
+        {
+          name: 'maf'
+          image: empty(mafImage) ? 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest' : mafImage
+          resources: { cpu: json('0.5'), memory: '1Gi' }
+          env: [
+            { name: 'PORT', value: '8790' }
+            { name: 'AZURE_CLIENT_ID', value: identity.properties.clientId }
+            { name: 'AZURE_OPENAI_ENDPOINT', value: openAi.properties.endpoint }
+            { name: 'AZURE_OPENAI_DEPLOYMENT', value: chatDeployment.name }
+            { name: 'AZURE_OPENAI_API_VERSION', value: '2024-10-21' }
+          ]
+        }
+      ]
+      scale: { minReplicas: 1, maxReplicas: 2 }
     }
   }
   dependsOn: [acrPull]
