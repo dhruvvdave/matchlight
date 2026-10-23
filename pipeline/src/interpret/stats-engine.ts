@@ -162,6 +162,7 @@ export class StatsEngine {
   private nextSample = 0;
   private lastPos = new Map<string, { x: number; y: number; ts: number }>();
   private flagSeq = 0;
+  private speedFlagLevel = 0;
 
   ts = 0;
   gameS = 0;
@@ -588,26 +589,26 @@ export class StatsEngine {
       } else if (pl.s < 14) P._sprinting = false;
       const T = this.teams[pl.side];
       if (pl.s > P.top_speed_kmh) P.top_speed_kmh = pl.s;
-      if (pl.s > T.top_player_speed_kmh) {
-        const matchTop = Math.max(this.teams.home.top_player_speed_kmh, this.teams.away.top_player_speed_kmh);
-        T.top_player_speed_kmh = pl.s;
-        if (pl.s >= 31 && pl.s > matchTop + 0.25) {
-          this.flag(
-            'top_speed',
-            {
-              team: pl.side,
-              player_id: pl.id,
-              value: pl.s,
-              previous: matchTop,
-              threshold: 31,
-              unit: 'km/h',
-              label: `Top speed ${pl.s.toFixed(1)} km/h`,
-              event_ids: this.recentIds(2),
-            },
-            'top-speed',
-            120,
-          );
-        }
+      if (pl.s > T.top_player_speed_kmh) T.top_player_speed_kmh = pl.s;
+      // Flag new match-high sprints (ignoring the first 5 minutes so kick-off bursts don't set the bar).
+      if (f.ts >= 300 && pl.s >= 31 && pl.s > this.speedFlagLevel + 0.25) {
+        const matchTop = this.speedFlagLevel;
+        this.speedFlagLevel = pl.s;
+        this.flag(
+          'top_speed',
+          {
+            team: pl.side,
+            player_id: pl.id,
+            value: pl.s,
+            previous: matchTop,
+            threshold: 31,
+            unit: 'km/h',
+            label: `Top speed ${pl.s.toFixed(1)} km/h`,
+            event_ids: this.recentIds(2),
+          },
+          'top-speed',
+          120,
+        );
       }
       // First player on each side to reach 10 km gets a milestone flag.
       if (P.distance_m >= 10000 && !this.cooldowns.has(`dist10-${pl.side}`)) {
@@ -675,7 +676,15 @@ export class StatsEngine {
     for (const s of ['home', 'away'] as const) {
       const now = s === 'home' ? ppdaH : ppdaA;
       const prev = this.valueAt(s === 'home' ? this.series.ppda_home : this.series.ppda_away, this.ts - 600);
-      if (now !== null && prev !== null && Math.abs(now - prev) >= 3 && Math.abs(now - prev) / prev >= 0.35) {
+      // Ignore early-match / tiny-sample swings: need 20' of play and meaningful values on both sides.
+      if (
+        this.gameS >= 1200 &&
+        now !== null &&
+        prev !== null &&
+        Math.min(now, prev) >= 2 &&
+        Math.abs(now - prev) >= 3 &&
+        Math.abs(now - prev) / prev >= 0.35
+      ) {
         this.flag(
           'ppda_shift',
           {

@@ -179,10 +179,10 @@ describe('StatsEngine (hand-crafted events)', () => {
       period: 1,
       ball: { x: 50, y: 34, z: 0 },
       possession: 'home',
-      players: [{ id: 'hba-07', side: 'home', x: 50 + ts * 9, y: 30, s }],
+      players: [{ id: 'hba-07', side: 'home', x: (ts - 300) * 9 + 40, y: 30, s }],
     });
-    expect(se.ingestFrame(frame(1, 30))).toHaveLength(0);
-    const flags = se.ingestFrame(frame(2, 33.4));
+    expect(se.ingestFrame(frame(301, 30))).toHaveLength(0);
+    const flags = se.ingestFrame(frame(302, 33.4));
     expect(flags).toHaveLength(1);
     expect(flags[0].kind).toBe('top_speed');
     expect(flags[0].value).toBe(33.4);

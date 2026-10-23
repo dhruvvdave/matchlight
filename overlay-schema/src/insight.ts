@@ -15,6 +15,9 @@ export const Fact = z.object({
   event_ids: z.array(z.string()),
   /** Canonical English rendering of the fact, e.g. "PPDA dropped 11.2 -> 6.1 after 61'". */
   text: z.string(),
+  /** Localisation template key + parameters so evidence can be rendered in any language offline. */
+  tkey: z.string().optional(),
+  params: z.record(z.union([z.string(), z.number()])).optional(),
 });
 export type Fact = z.infer<typeof Fact>;
 

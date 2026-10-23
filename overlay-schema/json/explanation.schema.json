@@ -145,6 +145,18 @@
               },
               "text": {
                 "type": "string"
+              },
+              "tkey": {
+                "type": "string"
+              },
+              "params": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": [
+                    "string",
+                    "number"
+                  ]
+                }
               }
             },
             "required": [

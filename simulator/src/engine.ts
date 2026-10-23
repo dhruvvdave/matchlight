@@ -606,8 +606,9 @@ export class MatchEngine {
       if (pz.lastPassKind === 'through' && this.ts - pz.lastPassTs < 4) pShot += 0.25;
     }
     if (forcedFor) {
-      if (pz.ax > 86 && Math.abs(pz.ay - 34) < 13) pShot = 0.92;
-      else if (pz.ax > 80 && Math.abs(pz.ay - 34) < 10) pShot = 0.55;
+      // Scripted goals/chances come from genuinely good positions (inside the box, central).
+      if (pz.ax > 93 && Math.abs(pz.ay - 34) < 10) pShot = 0.92;
+      else if (pz.ax > 89 && Math.abs(pz.ay - 34) < 8) pShot = 0.45;
       else pShot = 0;
     } else if (this.scripted && forcedAgainst) pShot *= 0.3;
 
