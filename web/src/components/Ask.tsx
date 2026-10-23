@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { AskAnswer, ViewerProfile } from '@matchlight/schema';
+import { t } from '../lib/i18n';
 import { store } from '../lib/store';
 
 const SUGGESTIONS = [
@@ -7,11 +8,11 @@ const SUGGESTIONS = [
   'Why did the momentum change?',
   "What happened at 64'?",
   'What is the xG?',
-  'How many shots?',
   'Who ran the most?',
 ];
 
 export function Ask({ profile, answers }: { profile: ViewerProfile; answers: AskAnswer[] }) {
+  const lang = profile.language;
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -30,41 +31,6 @@ export function Ask({ profile, answers }: { profile: ViewerProfile; answers: Ask
   };
   return (
     <div className="ask">
-      <div className="ask-log" aria-live="polite">
-        {answers.length === 0 && (
-          <p className="muted">
-            Ask anything about the match. Answers come from the event store and are checked by the Critic
-            agent.
-          </p>
-        )}
-        {[...answers].reverse().map((a) => (
-          <div key={a.id} className="qa">
-            <div className="q">{a.question}</div>
-            <div className="a" dir={a.dir} lang={a.lang}>
-              {a.answer}
-            </div>
-            <div className="a-meta">
-              <span className={`chip ${a.grounded ? 'ok' : 'warn'}`}>
-                {a.grounded ? '✓ grounded' : '! unverified'}
-              </span>
-              <span className="chip">{a.source === 'llm' ? 'Azure OpenAI + tools' : 'rule router'}</span>
-              {a.event_ids.length > 0 && (
-                <span className="chip mono">
-                  {a.event_ids.slice(0, 4).join(' ')}
-                  {a.event_ids.length > 4 ? ' …' : ''}
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="ask-sugs">
-        {SUGGESTIONS.map((s) => (
-          <button key={s} className="sug" onClick={() => submit(s)} disabled={busy}>
-            {s}
-          </button>
-        ))}
-      </div>
       <form
         className="ask-form"
         onSubmit={(e) => {
@@ -72,18 +38,40 @@ export function Ask({ profile, answers }: { profile: ViewerProfile; answers: Ask
           void submit(q);
         }}
       >
+        <label className="sr-only" htmlFor="ask-input">
+          {t(lang, 'ask_placeholder')}
+        </label>
         <input
+          id="ask-input"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Ask the match…"
-          aria-label="Ask the match"
+          placeholder={t(lang, 'ask_placeholder')}
           maxLength={300}
         />
         <button className="btn" disabled={busy || !q.trim()}>
-          {busy ? '…' : 'Ask'}
+          {t(lang, 'ask_button')}
         </button>
       </form>
+      <p className="ask-try" lang="en" dir="ltr">
+        {SUGGESTIONS.map((s) => (
+          <button key={s} type="button" className="link" onClick={() => submit(s)} disabled={busy}>
+            {s}
+          </button>
+        ))}
+      </p>
       {err && <p className="error">{err}</p>}
+      <div className="ask-log" aria-live="polite">
+        {answers.length === 0 && <p className="feed-empty">{t(lang, 'ask_empty')}</p>}
+        {[...answers].reverse().map((a) => (
+          <article key={a.id} className={a.grounded ? 'qa' : 'qa qa-unchecked'}>
+            <p className="q">{a.question}</p>
+            <p className="a" dir={a.dir} lang={a.lang}>
+              {a.answer}
+            </p>
+            <p className="a-note">{t(lang, a.grounded ? 'checked' : 'not_checked')}</p>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,47 +1,55 @@
 import type { CSSProperties } from 'react';
-import type { MatchMeta, Overlay, OverlayOf } from '@matchlight/schema';
-import { livePositions, pitchToStage } from './Pitch';
-import { Sparkline } from './Charts';
+import type { MatchMeta, Overlay, OverlayOf, Side } from '@matchlight/schema';
+import { kit } from '../lib/kits';
+import { store } from '../lib/store';
+import type { PitchView } from './Pitch';
 
 const SAFE = 0.05;
-const ICONS: Record<string, string> = {
-  goal: '⚽',
-  card: '▮',
-  chance: '◎',
-  tactic: '⇄',
-  momentum: '↗',
-  speed: '⚡',
-  pass: '➶',
-  sub: '⇅',
-  save: '✋',
-  info: '●',
-};
 
-export function OverlayLayer({ overlays, now, meta }: { overlays: Overlay[]; now: number; meta: MatchMeta }) {
+/** Split "Goal · 64'" style server titles into separate fields so the layout, not punctuation, separates them. */
+const parts = (s: string) => s.split(' · ').map((x) => x.trim());
+
+export function OverlayLayer({
+  overlays,
+  now,
+  meta,
+  view,
+}: {
+  overlays: Overlay[];
+  now: number;
+  meta: MatchMeta;
+  view: PitchView;
+}) {
   const visible = overlays.filter((o) => o.start_ts <= now + 0.5 && now < o.start_ts + o.duration);
   return (
-    <div className="safe-area" aria-hidden="false">
+    <div className="safe-area">
       {visible.map((o) => {
-        const style: CSSProperties =
-          o.kind === 'player_tag'
-            ? tagPosition(o)
-            : {
-                left: `${o.position.x * 100}%`,
-                top: `${o.position.y * 100}%`,
-                width: `${o.position.w * 100}%`,
-              };
+        let style: CSSProperties = {
+          left: `${o.position.x * 100}%`,
+          top: `${o.position.y * 100}%`,
+          width: `${o.position.w * 100}%`,
+        };
+        if (o.kind === 'player_tag') {
+          const at = livePosition(o.content.player_id);
+          if (!at) return null;
+          const s = view.toStage(at.x, at.y);
+          if (!s.visible) return null;
+          style = {
+            left: `${((s.left - SAFE) / (1 - 2 * SAFE)) * 100}%`,
+            top: `${((s.top - SAFE) / (1 - 2 * SAFE)) * 100}%`,
+          };
+        }
         return (
           <div
             key={o.id}
-            className={`ov ov-${o.kind} ov-${o.region} theme-${o.theme}`}
+            className={`gfx gfx-${o.kind} at-${o.region} ${o.theme === 'high_contrast' ? 'gfx-hc' : ''}`}
             style={style}
             dir={o.dir}
             lang={o.language}
-            role={o.kind === 'key_moment_card' ? 'status' : undefined}
             aria-label={o.aria_label}
-            data-priority={o.priority}
+            role={o.kind === 'key_moment_card' ? 'status' : undefined}
           >
-            <OverlayBody o={o} meta={meta} />
+            <Body o={o} meta={meta} />
           </div>
         );
       })}
@@ -49,100 +57,78 @@ export function OverlayLayer({ overlays, now, meta }: { overlays: Overlay[]; now
   );
 }
 
-function tagPosition(o: OverlayOf<'player_tag'>): CSSProperties {
-  const live = livePositions.get(o.content.player_id);
-  if (live) {
-    const p = pitchToStage(live.x, live.y);
-    return {
-      left: `${((p.left - SAFE) / (1 - 2 * SAFE)) * 100}%`,
-      top: `${((p.top - SAFE) / (1 - 2 * SAFE)) * 100}%`,
-    };
-  }
-  return { left: `${o.position.x * 100}%`, top: `${o.position.y * 100}%` };
+// Player tags anchor to the latest tracking position.
+function livePosition(id: string) {
+  const p = store.frame?.players.find((x) => x.id === id);
+  return p ? { x: p.x, y: p.y } : null;
 }
 
-function OverlayBody({ o, meta }: { o: Overlay; meta: MatchMeta }) {
-  const color = (side?: 'home' | 'away') =>
-    side ? (side === 'home' ? meta.home : meta.away).colors.primary : 'var(--accent)';
+function teamVars(meta: MatchMeta, side?: Side): CSSProperties {
+  if (!side) return {};
+  const k = kit(meta, side);
+  return { ['--kit' as string]: k.base, ['--kit-trim' as string]: k.trim, ['--kit-ink' as string]: k.ink };
+}
+
+function Body({ o, meta }: { o: Overlay; meta: MatchMeta }) {
   switch (o.kind) {
-    case 'lower_third':
+    case 'lower_third': {
+      const sub = o.content.subtitle ? parts(o.content.subtitle) : [];
       return (
-        <div className="lt" style={{ ['--team' as string]: o.content.accent ?? color(o.content.team) }}>
-          <div className="lt-bar" />
-          <div className="lt-text">
-            <div className="lt-title">{o.content.title}</div>
-            {o.content.subtitle && <div className="lt-sub">{o.content.subtitle}</div>}
-          </div>
+        <div className="lt" style={teamVars(meta, o.content.team)}>
+          <p className="lt-title">{parts(o.content.title).join(' ')}</p>
+          {sub.length > 0 && (
+            <p className="lt-sub">
+              <span>{sub[0]}</span>
+              {sub[1] && <span className="lt-min">{sub[1]}</span>}
+            </p>
+          )}
         </div>
       );
+    }
     case 'player_tag':
       return (
-        <div className="tag" style={{ ['--team' as string]: color(o.content.team) }}>
-          <span className="tag-num">{o.content.number}</span>
+        <div className="tag" style={teamVars(meta, o.content.team)}>
           <span className="tag-name">{o.content.name}</span>
-          {o.content.value && (
-            <span className="tag-val">
-              {o.content.label ? `${o.content.label} ` : ''}
-              <b>{o.content.value}</b>
-            </span>
-          )}
+          {o.content.value && <span className="tag-val">{o.content.value}</span>}
         </div>
       );
     case 'stat_badge':
       return (
-        <div className="badge">
-          <div className="badge-label">{o.content.label}</div>
-          <div className="badge-row">
-            <span className="badge-val">{o.content.display}</span>
-            {o.content.trend && (
-              <span className={`trend trend-${o.content.trend}`}>
-                {o.content.trend === 'up' ? '▲' : o.content.trend === 'down' ? '▼' : '■'}
-              </span>
-            )}
-          </div>
-          {o.content.series && o.content.series.length > 2 && (
-            <Sparkline values={o.content.series} height={26} />
-          )}
+        <div className="badge" style={teamVars(meta, o.content.team)}>
+          <p className="badge-label">{o.content.label}</p>
+          <p className="badge-val num" key={o.content.display}>
+            {o.content.display}
+          </p>
         </div>
       );
     case 'momentum_bar': {
       const v = o.content.value;
+      const hk = kit(meta, 'home');
+      const ak = kit(meta, 'away');
       return (
-        <div className="mbar">
-          <span className="mbar-l" style={{ color: o.content.home_color }}>
-            {o.content.home_label}
-          </span>
-          <div className="mbar-track">
-            <div className="mbar-mid" />
-            <div
+        <div className="mbar" dir="ltr">
+          <span>{o.content.home_label}</span>
+          <span className="mbar-track" aria-hidden>
+            <span
               className="mbar-fill"
               style={{
-                left: v >= 0 ? '50%' : `${50 + v / 2}%`,
+                insetInlineStart: v >= 0 ? '50%' : `${50 + v / 2}%`,
                 width: `${Math.abs(v) / 2}%`,
-                background: v >= 0 ? o.content.home_color : o.content.away_color,
+                background: v >= 0 ? hk.base : ak.base,
               }}
             />
-          </div>
-          <span className="mbar-r" style={{ color: o.content.away_color }}>
-            {o.content.away_label}
           </span>
+          <span>{o.content.away_label}</span>
         </div>
       );
     }
     case 'pass_map':
       return (
         <div className="pmap">
-          <div className="pmap-title">{o.content.title}</div>
-          <svg viewBox="-2 -2 109 72" className="pmap-svg">
+          <p className="pmap-title">{parts(o.content.title).join(', ')}</p>
+          <svg viewBox="-2 -2 109 72" className="pmap-svg" aria-hidden>
             <rect x="0" y="0" width="105" height="68" className="pmap-pitch" />
             <line x1="52.5" y1="0" x2="52.5" y2="68" className="pmap-line" />
-            <rect x="0" y="13.84" width="16.5" height="40.32" className="pmap-line" />
-            <rect x="88.5" y="13.84" width="16.5" height="40.32" className="pmap-line" />
-            <defs>
-              <marker id={`arr-${o.id}`} markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L6,3 L0,6 z" fill="currentColor" />
-              </marker>
-            </defs>
             {o.content.passes.map((p, i) => (
               <line
                 key={i}
@@ -151,28 +137,20 @@ function OverlayBody({ o, meta }: { o: Overlay; meta: MatchMeta }) {
                 x2={p.end_x}
                 y2={68 - p.end_y}
                 className={p.complete ? 'pm-ok' : 'pm-bad'}
-                style={{
-                  color: p.complete
-                    ? `hsl(${80 - p.difficulty * 60}, 100%, ${55 + p.difficulty * 10}%)`
-                    : '#ff5a5a',
-                  opacity: 0.4 + 0.6 * ((i + 1) / o.content.passes.length),
-                }}
-                markerEnd={`url(#arr-${o.id})`}
               />
             ))}
           </svg>
         </div>
       );
-    case 'key_moment_card':
+    case 'key_moment_card': {
+      const [label, minute] = parts(o.content.title);
+      const hero = o.region === 'center';
       return (
-        <div
-          className={`card ${o.region === 'center' ? 'card-hero' : ''}`}
-          style={{ ['--team' as string]: color(o.content.team) }}
-        >
-          <div className="card-head">
-            <span className="card-icon">{ICONS[o.content.icon] ?? '●'}</span>
-            <span className="card-title">{o.content.title}</span>
-          </div>
+        <div className={hero ? 'card card-hero' : 'card'} style={teamVars(meta, o.content.team)}>
+          <p className="card-head">
+            <span className="card-min num">{minute}</span>
+            <span className="card-label">{label}</span>
+          </p>
           <p className="card-body">{o.content.body}</p>
           {o.content.evidence.length > 0 && (
             <ul className="card-ev">
@@ -181,13 +159,10 @@ function OverlayBody({ o, meta }: { o: Overlay; meta: MatchMeta }) {
               ))}
             </ul>
           )}
-          {o.content.confidence !== undefined && (
-            <div className="card-conf" title="Explainer confidence (Critic-verified)">
-              <span style={{ width: `${o.content.confidence * 100}%` }} />
-              <em>{Math.round(o.content.confidence * 100)}% · grounded</em>
-            </div>
-          )}
         </div>
       );
+    }
   }
 }
+
+export type { OverlayOf };
