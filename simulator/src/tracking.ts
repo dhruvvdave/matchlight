@@ -19,7 +19,11 @@ interface BallKey {
  * players hold formation shape relative to the ball, the actor of each event arrives at its location,
  * and movement is speed-limited by each player's pace and fatigue. Also back-fills `player_speed_kmh`.
  */
-export function generateTracking(matchId: string, events: MatchEvent[], lineups: LineupSnapshot[]): TrackingFrame[] {
+export function generateTracking(
+  matchId: string,
+  events: MatchEvent[],
+  lineups: LineupSnapshot[],
+): TrackingFrame[] {
   const frames: TrackingFrame[] = [];
   if (!events.length) return frames;
   const endTs = events[events.length - 1].ts;
@@ -32,7 +36,12 @@ export function generateTracking(matchId: string, events: MatchEvent[], lineups:
     if ((e.type === 'pass' || e.type === 'shot') && e.end_x !== undefined && e.end_y !== undefined) {
       const len = Math.hypot(e.end_x - e.x, e.end_y - e.y);
       const flight = len / Math.max(5, e.ball_speed_kmh / 3.6);
-      const peak = e.type === 'pass' && e.height === 'high' ? Math.min(12, len * 0.18) : e.type === 'pass' && e.height === 'low' ? 1.2 : 0;
+      const peak =
+        e.type === 'pass' && e.height === 'high'
+          ? Math.min(12, len * 0.18)
+          : e.type === 'pass' && e.height === 'low'
+            ? 1.2
+            : 0;
       keys[keys.length - 1].peak = peak;
       keys.push({ ts: e.ts + flight, x: e.end_x, y: e.end_y, peak: 0 });
     }
@@ -41,8 +50,11 @@ export function generateTracking(matchId: string, events: MatchEvent[], lineups:
   keys.sort((a, b) => a.ts - b.ts);
 
   const pos = new Map<string, { x: number; y: number }>();
+  const vel = new Map<string, { x: number; y: number }>();
   const phase = new Map<string, number>();
   let ki = 0;
+  let sbx = 52.5;
+  let sby = 34;
   let ei = 0;
   let possession: Side | null = 'home';
   let lastClock = events[0];
@@ -73,22 +85,31 @@ export function generateTracking(matchId: string, events: MatchEvent[], lineups:
 
     // Upcoming actors get pulled toward the event location.
     const pulls = new Map<string, { x: number; y: number; w: number }>();
-    for (let j = ei; j < events.length && events[j].ts <= s + 3.5; j++) {
+    for (let j = ei; j < events.length && events[j].ts <= s + 2.5; j++) {
       const e = events[j];
-      if (e.player_id && e.x !== undefined && e.y !== undefined && (ON_BALL.has(e.type) || DEF_ACTIONS.has(e.type))) {
-        if (!pulls.has(e.player_id)) pulls.set(e.player_id, { x: e.x, y: e.y, w: e.ts - s < 1.5 ? 0.95 : 0.7 });
+      if (
+        e.player_id &&
+        e.x !== undefined &&
+        e.y !== undefined &&
+        (ON_BALL.has(e.type) || DEF_ACTIONS.has(e.type))
+      ) {
+        if (!pulls.has(e.player_id))
+          pulls.set(e.player_id, { x: e.x, y: e.y, w: e.ts - s < 1.2 ? 0.9 : 0.45 });
       }
       if (e.type === 'pass' && e.recipient_id && !pulls.has(e.recipient_id)) {
-        pulls.set(e.recipient_id, { x: e.end_x, y: e.end_y, w: 0.8 });
+        pulls.set(e.recipient_id, { x: e.end_x, y: e.end_y, w: 0.6 });
       }
     }
 
+    // Teams react to the ball with a lag: shape follows a smoothed ball, not every flick of it.
+    sbx = s === 0 ? bx : sbx + (bx - sbx) * 0.35;
+    sby = s === 0 ? by : sby + (by - sby) * 0.35;
     const players: TrackingFrame['players'] = [];
     const speeds = new Map<string, number>();
     for (const side of ['home', 'away'] as const) {
       const lu = lineupAt(side, s);
       const inPoss = possession === side;
-      const b = toAtt(side, bx, by);
+      const b = toAtt(side, sbx, sby);
       for (const pl of lu.players) {
         if (sentOff.has(pl.id)) continue;
         const sp = shapePosition(pl.slot, {
@@ -104,25 +125,44 @@ export function generateTracking(matchId: string, events: MatchEvent[], lineups:
           phase.set(pl.id, ph);
         }
         // Off-ball movement: slow drifting runs around the shape position.
-        const wig = pl.slot.pos === 'GK' ? 0.6 : 3.2;
-        const t = s / 9;
-        let target = toAbs(side, sp.ax + wig * Math.sin(t + ph) + 1.5 * Math.sin(t * 2.7 + ph * 2), sp.ay + wig * Math.cos(t * 0.8 + ph));
+        const wig = pl.slot.pos === 'GK' ? 0.8 : 4.2;
+        const t = s / 5;
+        let target = toAbs(
+          side,
+          sp.ax + wig * Math.sin(t + ph) + 1.5 * Math.sin(t * 2.7 + ph * 2),
+          sp.ay + wig * Math.cos(t * 0.8 + ph),
+        );
         const pull = pulls.get(pl.id);
-        if (pull) target = { x: target.x + (pull.x - target.x) * pull.w, y: target.y + (pull.y - target.y) * pull.w };
+        if (pull)
+          target = { x: target.x + (pull.x - target.x) * pull.w, y: target.y + (pull.y - target.y) * pull.w };
         let cur = pos.get(pl.id);
-        if (!cur || s === 0 || (lastClock.type === 'period_start' && lastClock.ts >= s - 1)) cur = { ...target };
+        if (!cur || s === 0 || (lastClock.type === 'period_start' && lastClock.ts >= s - 1))
+          cur = { ...target };
         const minutes = lastClock.game_s / 60;
         const fatigue = 1 - 0.18 * clamp(minutes / 95, 0, 1) * (1.3 - pl.stamina / 100);
         const vmax = ((pl.pace / 100) * 4.6 + 5.1) * fatigue; // m/s: pace 50 -> 7.4, pace 95 -> 9.5
-        const dx = (target.x - cur.x) * 0.7;
-        const dy = (target.y - cur.y) * 0.7;
-        const d = Math.hypot(dx, dy);
-        const step = Math.min(d, vmax);
-        const nx = d > 0 ? cur.x + (dx / d) * step : cur.x;
-        const ny = d > 0 ? cur.y + (dy / d) * step : cur.y;
-        const next = { x: clamp(nx, 0, 105), y: clamp(ny, 0, 68) };
+        // Desired velocity toward the target, then acceleration-limited (~3 m/s^2) for smooth, human movement.
+        let dvx = (target.x - cur.x) * 0.5;
+        let dvy = (target.y - cur.y) * 0.5;
+        const dv = Math.hypot(dvx, dvy);
+        if (dv > vmax) {
+          dvx = (dvx / dv) * vmax;
+          dvy = (dvy / dv) * vmax;
+        }
+        const v0 = vel.get(pl.id) ?? { x: 0, y: 0 };
+        let ax = dvx - v0.x;
+        let ay = dvy - v0.y;
+        const a = Math.hypot(ax, ay);
+        const amax = 3.2;
+        if (a > amax) {
+          ax = (ax / a) * amax;
+          ay = (ay / a) * amax;
+        }
+        const v1 = { x: v0.x + ax, y: v0.y + ay };
+        vel.set(pl.id, v1);
+        const next = { x: clamp(cur.x + v1.x, 0, 105), y: clamp(cur.y + v1.y, 0, 68) };
         pos.set(pl.id, next);
-        const kmh = round1(step * 3.6);
+        const kmh = round1(Math.hypot(next.x - cur.x, next.y - cur.y) * 3.6);
         speeds.set(pl.id, kmh);
         players.push({ id: pl.id, side, x: round1(next.x), y: round1(next.y), s: kmh });
       }

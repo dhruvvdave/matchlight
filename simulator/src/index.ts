@@ -2,7 +2,7 @@ import type { MatchEvent, MatchMeta, ScenarioId, StreamRecord, TrackingFrame } f
 import { CLUBS, COMPETITION, REFEREES, WEATHER } from './names.js';
 import { MatchEngine } from './engine.js';
 import { Rng } from './rng.js';
-import { SCENARIOS, listScenarios, type ScenarioDef } from './scenarios.js';
+import { SCENARIOS, type ScenarioDef } from './scenarios.js';
 import { buildTeam } from './teams.js';
 import { generateTracking } from './tracking.js';
 import type { Formation, TeamStyle } from '@matchlight/schema';
@@ -100,7 +100,8 @@ export function toStream(result: SimulationResult): StreamRecord[] {
   const out: StreamRecord[] = [{ kind: 'meta', meta: result.meta }];
   let fi = 0;
   for (const e of result.events) {
-    while (fi < result.frames.length && result.frames[fi].ts < e.ts) out.push({ kind: 'tracking', frame: result.frames[fi++] });
+    while (fi < result.frames.length && result.frames[fi].ts < e.ts)
+      out.push({ kind: 'tracking', frame: result.frames[fi++] });
     out.push({ kind: 'event', event: e });
   }
   while (fi < result.frames.length) out.push({ kind: 'tracking', frame: result.frames[fi++] });
@@ -108,7 +109,11 @@ export function toStream(result: SimulationResult): StreamRecord[] {
 }
 
 export function toJsonl(result: SimulationResult): string {
-  return toStream(result).map((r) => JSON.stringify(r)).join('\n') + '\n';
+  return (
+    toStream(result)
+      .map((r) => JSON.stringify(r))
+      .join('\n') + '\n'
+  );
 }
 
 export function demoStartMinute(scenario: ScenarioId): number {

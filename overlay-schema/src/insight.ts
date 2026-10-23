@@ -99,7 +99,10 @@ export type Explanation = z.infer<typeof Explanation>;
 /** Shape the LLM must return for an explanation (validated before the Critic runs). */
 export const ExplanationDraft = z.object({
   claim: z.string().min(8),
-  evidence: z.array(z.object({ fact_id: z.string(), text: z.string() })).min(1).max(4),
+  evidence: z
+    .array(z.object({ fact_id: z.string(), text: z.string() }))
+    .min(1)
+    .max(4),
   confidence: z.number().min(0).max(1),
   event_ids: z.array(z.string()),
 });

@@ -157,7 +157,12 @@ export const SCENARIOS: Record<Exclude<ScenarioId, 'random'>, ScenarioDef> = {
 
 export function listScenarios(): ScenarioInfo[] {
   return [
-    ...Object.values(SCENARIOS).map((s) => ({ id: s.id, title: s.title, description: s.description, seed: s.seed })),
+    ...Object.values(SCENARIOS).map((s) => ({
+      id: s.id,
+      title: s.title,
+      description: s.description,
+      seed: s.seed,
+    })),
     {
       id: 'random' as const,
       title: 'Generate New Match',

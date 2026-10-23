@@ -1,6 +1,22 @@
-import type { Formation, MatchEvent, MatchMeta, Player, Position, Side, Team, TeamStyle } from '@matchlight/schema';
+import type {
+  Formation,
+  MatchEvent,
+  MatchMeta,
+  Player,
+  Position,
+  Side,
+  Team,
+  TeamStyle,
+} from '@matchlight/schema';
 import { otherSide } from '@matchlight/schema';
-import { FORMATIONS, TEN_MAN_FORMATIONS, assignSlots, shapePosition, toAbs, toAtt, type Slot } from './formations.js';
+import {
+  FORMATIONS,
+  TEN_MAN_FORMATIONS,
+  assignSlots,
+  shapePosition,
+  toAbs,
+  type Slot,
+} from './formations.js';
 import { Rng, clamp, round1, sigmoid } from './rng.js';
 import type { Beat, ScenarioDef } from './scenarios.js';
 
@@ -232,7 +248,8 @@ export class MatchEngine {
     let target = 0;
     const m = this.minute();
     for (const b of this.beats) {
-      if (b.kind === 'momentum' && m >= b.from && m <= b.to) target += (b.team === 'home' ? 1 : -1) * b.strength;
+      if (b.kind === 'momentum' && m >= b.from && m <= b.to)
+        target += (b.team === 'home' ? 1 : -1) * b.strength;
     }
     if (!this.scripted) target += clamp((this.score.away - this.score.home) * 0.12, -0.25, 0.25);
     return clamp(target, -0.9, 0.9);
@@ -316,10 +333,20 @@ export class MatchEngine {
       b.done = true;
       switch (b.kind) {
         case 'goal':
-          this.forced = { team: b.team, outcome: 'goal', prefer: b.prefer ?? ['ST'], deadline: this.gameS + 240 };
+          this.forced = {
+            team: b.team,
+            outcome: 'goal',
+            prefer: b.prefer ?? ['ST'],
+            deadline: this.gameS + 240,
+          };
           break;
         case 'big_chance':
-          this.forced = { team: b.team, outcome: b.outcome, prefer: ['ST', 'AM', 'LW', 'RW'], deadline: this.gameS + 240 };
+          this.forced = {
+            team: b.team,
+            outcome: b.outcome,
+            prefer: ['ST', 'AM', 'LW', 'RW'],
+            deadline: this.gameS + 240,
+          };
           break;
         case 'sub':
           this.pendingSubs.push(b);
@@ -400,9 +427,7 @@ export class MatchEngine {
         .sort((a, b) => a.energy - b.energy)[0];
     const bench = st.players.filter((p) => !p.used);
     const inn =
-      bench.find((p) => p.p.position === inPos) ??
-      bench.find((p) => p.p.position !== 'GK') ??
-      undefined;
+      bench.find((p) => p.p.position === inPos) ?? bench.find((p) => p.p.position !== 'GK') ?? undefined;
     if (!out || !inn) return;
     out.onPitch = false;
     inn.onPitch = true;
@@ -435,13 +460,22 @@ export class MatchEngine {
         this.tacticalShift(
           side,
           formation,
-          { pressing: clamp(st.style.pressing + 0.3, 0, 1), line_height: clamp(st.style.line_height + 0.25, 0, 1), directness: 0.6 },
+          {
+            pressing: clamp(st.style.pressing + 0.3, 0, 1),
+            line_height: clamp(st.style.line_height + 0.25, 0, 1),
+            directness: 0.6,
+          },
           'Chasing the game: more bodies forward and a higher press',
         );
       } else if (diff > 0 && m > 78 && this.rng.chance(0.02)) {
         st.natShiftDone = true;
         const formation = this.onPitch(side).length === 11 ? '5-4-1' : '5-3-1';
-        this.tacticalShift(side, formation, { pressing: 0.2, line_height: 0.2 }, 'Protecting the lead with a back five');
+        this.tacticalShift(
+          side,
+          formation,
+          { pressing: 0.2, line_height: 0.2 },
+          'Protecting the lead with a back five',
+        );
       }
     }
   }
@@ -452,7 +486,8 @@ export class MatchEngine {
     for (const period of [1, 2] as const) {
       this.period = period;
       this.gameS = period === 1 ? 0 : 2700;
-      const end = (period === 1 ? 2700 : 5400) + this.scenario.stoppage[period - 1] * 60 + this.rng.float(0, 40);
+      const end =
+        (period === 1 ? 2700 : 5400) + this.scenario.stoppage[period - 1] * 60 + this.rng.float(0, 40);
       this.emit('period_start', undefined, { score: { ...this.score } });
       this.kickoff(period === 1 ? 'home' : 'away');
       let guard = 0;
@@ -472,7 +507,8 @@ export class MatchEngine {
 
   private kickoff(side: Side) {
     this.deadBall();
-    const taker = this.onPitch(side).find((p) => ['ST', 'AM', 'CM'].includes(p.slot.pos)) ?? this.onPitch(side)[1];
+    const taker =
+      this.onPitch(side).find((p) => ['ST', 'AM', 'CM'].includes(p.slot.pos)) ?? this.onPitch(side)[1];
     this.possessionId++;
     this.setPossession(side, taker, 52.5, 34);
     this.emit('set_piece', side, { player_id: taker.p.id, ...this.abs(side, 52.5, 34), kind: 'kickoff' });
@@ -481,7 +517,6 @@ export class MatchEngine {
 
   private step() {
     const pz = this.poss;
-    const att = this.teams[pz.side];
     const defSide = otherSide(pz.side);
     const def = this.teams[defSide];
     const forcedFor = this.forced?.team === pz.side ? this.forced : null;
@@ -648,7 +683,10 @@ export class MatchEngine {
     if (opts.forceKind === 'cross' || (wide && pz.ax > 76 && r < 0.38 + (forcedFor ? 0.3 : 0))) {
       kind = 'cross';
       const pool = shape.filter((s) => ['ST', 'LW', 'RW', 'AM', 'CB', 'CM'].includes(s.ps.slot.pos));
-      const tgt = this.rng.weighted(pool, pool.map((s) => (s.ps.slot.pos === 'ST' ? 3 : s.ps.slot.pos === 'CB' && opts.setPiece ? 2 : 1)));
+      const tgt = this.rng.weighted(
+        pool,
+        pool.map((s) => (s.ps.slot.pos === 'ST' ? 3 : s.ps.slot.pos === 'CB' && opts.setPiece ? 2 : 1)),
+      );
       target = { ps: tgt.ps, ax: this.rng.float(88, 98.5), ay: this.rng.float(26, 42) };
     } else if (
       forwards.length &&
@@ -658,7 +696,11 @@ export class MatchEngine {
     ) {
       kind = 'through';
       const tgt = this.rng.pick(forwards);
-      target = { ps: tgt.ps, ax: clamp(Math.max(tgt.ax, pz.ax) + this.rng.float(6, 14), 60, 94), ay: clamp(tgt.ay + this.rng.float(-6, 6), 14, 54) };
+      target = {
+        ps: tgt.ps,
+        ax: clamp(Math.max(tgt.ax, pz.ax) + this.rng.float(6, 14), 60, 94),
+        ay: clamp(tgt.ay + this.rng.float(-6, 6), 14, 54),
+      };
     } else if (
       opts.forceKind === 'long' ||
       (forwards.length && pz.ax < 45 && r < 0.03 + 0.14 * att.style.directness + (pz.pressure ? 0.08 : 0))
@@ -673,7 +715,12 @@ export class MatchEngine {
         const dist = Math.hypot(s.ax - pz.ax, s.ay - pz.ay);
         const progress = s.ax - pz.ax;
         let w = Math.exp(-dist / 12.5) * (dist < 5 ? 0.2 : 1);
-        w *= progress > 0 ? 1 + (progress / 22) * (0.6 + att.style.directness) : progress < -5 ? 0.55 + (pz.pressure ? 0.5 : 0) : 1;
+        w *=
+          progress > 0
+            ? 1 + (progress / 22) * (0.6 + att.style.directness)
+            : progress < -5
+              ? 0.55 + (pz.pressure ? 0.5 : 0)
+              : 1;
         if (forcedFor) w *= progress > 0 ? 2.5 + (forcedFor.prefer.includes(s.ps.slot.pos) ? 3 : 0) : 0.2;
         return w;
       });
@@ -692,7 +739,14 @@ export class MatchEngine {
       else if (progress > 10 || (target.ax > 70 && progress > 5)) kind = 'progressive';
     }
     if (opts.setPiece && kind !== 'cross') kind = 'set_piece';
-    const height = kind === 'cross' || kind === 'long' || kind === 'switch' ? (this.rng.chance(0.75) ? 'high' : 'low') : len > 25 ? 'low' : 'ground';
+    const height =
+      kind === 'cross' || kind === 'long' || kind === 'switch'
+        ? this.rng.chance(0.75)
+          ? 'high'
+          : 'low'
+        : len > 25
+          ? 'low'
+          : 'ground';
 
     // Success model: distance, direction, pressure, zone, skill, fatigue, momentum.
     const passer = pz.holder;
@@ -722,7 +776,7 @@ export class MatchEngine {
           : kind === 'through'
             ? this.rng.float(45, 72)
             : clamp(28 + len * 1.3 + this.rng.normal(0, 6), 22, 80);
-    const flight = len / (ballSpeed / 3.6) * (height === 'high' ? 1.25 : 1.05);
+    const flight = (len / (ballSpeed / 3.6)) * (height === 'high' ? 1.25 : 1.05);
     const think = (2.4 - 1.5 * att.style.tempo) * this.rng.float(0.5, 1.4) * (pz.pressure ? 0.6 : 1);
 
     let outcome: 'complete' | 'incomplete' | 'out' = 'complete';
@@ -790,17 +844,25 @@ export class MatchEngine {
       this.restart(endAx >= 100 ? 'goal_kick' : 'throw_in');
       return;
     }
-    // Intercepted.
+    // Misplaced: cleared, cleanly intercepted, or simply a loose ball the defenders recover.
     const interceptor = this.nearestDefender(pz.side, endAx, endAy);
     const clear = endAx > 78 && this.rng.chance(0.35);
-    this.emit(clear ? 'clearance' : 'interception', defSide, {
-      player_id: interceptor.p.id,
-      ...this.abs(pz.side, endAx, endAy),
-    });
+    const intercepted = clear || this.rng.chance(0.4 + 0.2 * this.teams[defSide].style.pressing);
+    if (intercepted) {
+      this.emit(clear ? 'clearance' : 'interception', defSide, {
+        player_id: interceptor.p.id,
+        ...this.abs(pz.side, endAx, endAy),
+      });
+    }
     this.advance(this.rng.float(0.5, 1.5));
+    if (!intercepted) {
+      this.turnover(defSide, endAx, endAy, 'loose_ball', interceptor);
+      return;
+    }
     if (clear) {
       // Cleared: 55% the defending side secures it, otherwise the second ball returns to the attack.
-      if (this.rng.chance(0.55)) this.turnover(defSide, clamp(endAx - this.rng.float(20, 35), 20, 80), endAy, 'clearance');
+      if (this.rng.chance(0.55))
+        this.turnover(defSide, clamp(endAx - this.rng.float(20, 35), 20, 80), endAy, 'clearance');
       else {
         pz.holder = this.nearestOwn(pz.side, endAx - 22, endAy);
         pz.ax = clamp(endAx - this.rng.float(18, 28), 40, 85);
@@ -821,7 +883,9 @@ export class MatchEngine {
     const header = pz.lastPassKind === 'cross' && this.ts - pz.lastPassTs < 4 && this.rng.chance(0.7);
     const body = header ? 'head' : this.rng.chance(0.68) ? 'right_foot' : 'left_foot';
     const counter = this.ts - pz.startTs < 14 && pz.startAx < 55 && pz.passes <= 4;
-    const sit = situation ?? (pz.fromSetPiece && this.ts - pz.startTs < 12 ? 'set_piece' : counter ? 'counter' : 'open_play');
+    const sit =
+      situation ??
+      (pz.fromSetPiece && this.ts - pz.startTs < 12 ? 'set_piece' : counter ? 'counter' : 'open_play');
     const gk = this.goalkeeper(defSide);
     let pGoal =
       sigmoid(-0.9 - 0.1 * d + 1.3 * angle) *
@@ -887,7 +951,11 @@ export class MatchEngine {
       return;
     }
     if (outcome === 'saved') {
-      this.emit('save', defSide, { player_id: gk.p.id, ...this.abs(pz.side, 103.5, clamp(endY, 30, 38)), shot_event_id: shot.id });
+      this.emit('save', defSide, {
+        player_id: gk.p.id,
+        ...this.abs(pz.side, 103.5, clamp(endY, 30, 38)),
+        shot_event_id: shot.id,
+      });
       this.advance(this.rng.float(1, 3));
       if (this.rng.chance(0.38)) {
         this.advance(this.rng.float(10, 20));
@@ -901,7 +969,11 @@ export class MatchEngine {
     }
     if (outcome === 'blocked') {
       const blocker = this.nearestDefender(pz.side, pz.ax + 2, pz.ay);
-      this.emit('block', defSide, { player_id: blocker.p.id, ...this.abs(pz.side, endX, endY), shot_event_id: shot.id });
+      this.emit('block', defSide, {
+        player_id: blocker.p.id,
+        ...this.abs(pz.side, endX, endY),
+        shot_event_id: shot.id,
+      });
       this.advance(this.rng.float(0.5, 1.5));
       const r = this.rng.next();
       if (r < 0.35) {
@@ -926,7 +998,8 @@ export class MatchEngine {
 
   private corner(side: Side, ay: number) {
     const taker =
-      this.onPitch(side).find((p) => ['LW', 'RW', 'LM', 'RM', 'AM'].includes(p.slot.pos)) ?? this.onPitch(side)[5];
+      this.onPitch(side).find((p) => ['LW', 'RW', 'LM', 'RM', 'AM'].includes(p.slot.pos)) ??
+      this.onPitch(side)[5];
     this.possessionId++;
     this.setPossession(side, taker, 104.5, ay, true);
     this.emit('set_piece', side, { player_id: taker.p.id, ...this.abs(side, 104.5, ay), kind: 'corner' });
@@ -947,7 +1020,11 @@ export class MatchEngine {
     pz.fromSetPiece = true;
     this.emit('set_piece', pz.side, { player_id: pz.holder.p.id, ...this.abs(pz.side, pz.ax, pz.ay), kind });
     this.advance(this.rng.float(2, 5));
-    if (kind === 'goal_kick') this.pass({ setPiece: true, forceKind: this.rng.chance(this.teams[pz.side].style.directness) ? 'long' : undefined });
+    if (kind === 'goal_kick')
+      this.pass({
+        setPiece: true,
+        forceKind: this.rng.chance(this.teams[pz.side].style.directness) ? 'long' : undefined,
+      });
     else this.pass({ setPiece: true });
   }
 
@@ -964,7 +1041,8 @@ export class MatchEngine {
     if (this.scripted) {
       if (offender.yellow === 0 && this.rng.chance(0.1)) this.card(offender, 'yellow', 'Reckless challenge');
     } else if (this.rng.chance(0.004)) this.card(offender, 'red', 'Serious foul play');
-    else if (this.rng.chance(0.13)) this.card(offender, offender.yellow ? 'second_yellow' : 'yellow', 'Reckless challenge');
+    else if (this.rng.chance(0.13))
+      this.card(offender, offender.yellow ? 'second_yellow' : 'yellow', 'Reckless challenge');
     this.advance(this.rng.float(12, 26));
     this.deadBall();
     this.freeKick();
@@ -981,15 +1059,25 @@ export class MatchEngine {
       pz.holder = taker;
       pz.ax = 94;
       pz.ay = 34;
-      this.emit('set_piece', pz.side, { player_id: taker.p.id, ...this.abs(pz.side, 94, 34), kind: 'penalty' });
+      this.emit('set_piece', pz.side, {
+        player_id: taker.p.id,
+        ...this.abs(pz.side, 94, 34),
+        kind: 'penalty',
+      });
       this.advance(this.rng.float(40, 70));
       this.shoot('penalty');
       return;
     }
-    this.emit('set_piece', pz.side, { player_id: pz.holder.p.id, ...this.abs(pz.side, pz.ax, pz.ay), kind: 'free_kick' });
+    this.emit('set_piece', pz.side, {
+      player_id: pz.holder.p.id,
+      ...this.abs(pz.side, pz.ax, pz.ay),
+      kind: 'free_kick',
+    });
     this.advance(this.rng.float(2, 6));
     if (d < 28 && Math.abs(pz.ay - 34) < 15 && this.rng.chance(0.35)) {
-      const taker = this.onPitch(pz.side).sort((a, b) => b.p.attributes.finishing - a.p.attributes.finishing)[0];
+      const taker = this.onPitch(pz.side).sort(
+        (a, b) => b.p.attributes.finishing - a.p.attributes.finishing,
+      )[0];
       pz.holder = taker;
       this.shoot('set_piece');
       return;
@@ -1018,7 +1106,12 @@ export class MatchEngine {
       );
       if (!scriptedShiftSoon) {
         const to: Formation = st.formation === '5-4-1' || st.formation === '3-5-2' ? '5-3-1' : '4-4-1';
-        this.tacticalShift(ps.side, to, { pressing: clamp(st.style.pressing - 0.2, 0.1, 1) }, 'Reshuffle after the red card');
+        this.tacticalShift(
+          ps.side,
+          to,
+          { pressing: clamp(st.style.pressing - 0.2, 0.1, 1) },
+          'Reshuffle after the red card',
+        );
       } else {
         assignSlots(this.onPitch(ps.side), st.formation);
         this.snapshot(ps.side);
@@ -1031,13 +1124,22 @@ export class MatchEngine {
     const candidates = this.onPitch(b.team).filter((p) => p.slot.pos === b.pos || p.p.position === b.pos);
     let offender =
       b.color === 'second_yellow'
-        ? (this.onPitch(b.team).find((p) => p.yellow > 0 && (p.slot.pos === b.pos || p.p.position === b.pos)) ??
-          this.onPitch(b.team).find((p) => p.yellow > 0))
+        ? (this.onPitch(b.team).find(
+            (p) => p.yellow > 0 && (p.slot.pos === b.pos || p.p.position === b.pos),
+          ) ?? this.onPitch(b.team).find((p) => p.yellow > 0))
         : candidates.find((p) => p.yellow === 0);
     offender ??= this.nearestDefender(pz.side, pz.ax, pz.ay);
-    this.emit('foul', b.team, { player_id: offender.p.id, ...this.abs(pz.side, pz.ax, pz.ay), opponent_id: pz.holder.p.id });
+    this.emit('foul', b.team, {
+      player_id: offender.p.id,
+      ...this.abs(pz.side, pz.ax, pz.ay),
+      opponent_id: pz.holder.p.id,
+    });
     this.advance(this.rng.float(2, 4));
-    this.card(offender, b.color === 'second_yellow' && offender.yellow === 0 ? 'red' : b.color, 'Tactical foul to stop a break');
+    this.card(
+      offender,
+      b.color === 'second_yellow' && offender.yellow === 0 ? 'red' : b.color,
+      'Tactical foul to stop a break',
+    );
     this.advance(this.rng.float(5, 12));
     this.deadBall();
     this.freeKick();

@@ -1,7 +1,22 @@
 import { z } from 'zod';
 import { Side } from './common.js';
 
-export const Position = z.enum(['GK', 'CB', 'LB', 'RB', 'LWB', 'RWB', 'DM', 'CM', 'AM', 'LM', 'RM', 'LW', 'RW', 'ST']);
+export const Position = z.enum([
+  'GK',
+  'CB',
+  'LB',
+  'RB',
+  'LWB',
+  'RWB',
+  'DM',
+  'CM',
+  'AM',
+  'LM',
+  'RM',
+  'LW',
+  'RW',
+  'ST',
+]);
 export type Position = z.infer<typeof Position>;
 
 export const Formation = z.enum(['4-3-3', '4-2-3-1', '4-4-2', '3-5-2', '5-4-1', '4-4-1', '4-2-4', '5-3-1']);

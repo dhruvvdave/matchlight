@@ -43,8 +43,20 @@ export function buildTeam(
   };
   const numberFor = (pos: Position) => {
     const preferred: Partial<Record<Position, number[]>> = {
-      GK: [1, 13, 31], RB: [2, 22], LB: [3, 23], CB: [4, 5, 6, 15], DM: [6, 16], CM: [8, 14, 18],
-      AM: [10, 20], RW: [7, 17], LW: [11, 19], ST: [9, 21, 29], RM: [7, 17], LM: [11, 12], RWB: [2, 24], LWB: [3, 26],
+      GK: [1, 13, 31],
+      RB: [2, 22],
+      LB: [3, 23],
+      CB: [4, 5, 6, 15],
+      DM: [6, 16],
+      CM: [8, 14, 18],
+      AM: [10, 20],
+      RW: [7, 17],
+      LW: [11, 19],
+      ST: [9, 21, 29],
+      RM: [7, 17],
+      LM: [11, 12],
+      RWB: [2, 24],
+      LWB: [3, 26],
     };
     for (const n of preferred[pos] ?? []) if (!numbers.has(n)) return n;
     for (let n = 24; n < 99; n++) if (!numbers.has(n)) return n;

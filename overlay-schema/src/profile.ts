@@ -4,7 +4,15 @@ import { Language, Side } from './common.js';
 export const ViewerMode = z.enum(['analyst', 'casual', 'club', 'player', 'metric']);
 export type ViewerMode = z.infer<typeof ViewerMode>;
 
-export const TrackedMetric = z.enum(['ball_speed', 'pass_difficulty', 'player_speed', 'xg', 'ppda', 'momentum', 'tempo']);
+export const TrackedMetric = z.enum([
+  'ball_speed',
+  'pass_difficulty',
+  'player_speed',
+  'xg',
+  'ppda',
+  'momentum',
+  'tempo',
+]);
 export type TrackedMetric = z.infer<typeof TrackedMetric>;
 
 export const ViewerProfile = z.object({

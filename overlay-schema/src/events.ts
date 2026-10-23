@@ -82,7 +82,11 @@ export const TackleEvent = z.object({
 
 export const InterceptionEvent = z.object({ ...Base, type: z.literal('interception') });
 export const ClearanceEvent = z.object({ ...Base, type: z.literal('clearance') });
-export const BlockEvent = z.object({ ...Base, type: z.literal('block'), shot_event_id: z.string().optional() });
+export const BlockEvent = z.object({
+  ...Base,
+  type: z.literal('block'),
+  shot_event_id: z.string().optional(),
+});
 
 export const PressureEvent = z.object({
   ...Base,
@@ -106,6 +110,7 @@ export const PossessionChangeEvent = z.object({
     'clearance',
     'offside',
     'miscontrol',
+    'loose_ball',
   ]),
 });
 
@@ -182,7 +187,14 @@ export const MatchEvent = z.discriminatedUnion('type', [
 ]);
 export type MatchEvent = z.infer<typeof MatchEvent>;
 export type EventType = MatchEvent['type'];
-export type EventOf<T extends EventType> = Extract<MatchEvent, { type: T }>;
+/** Narrow MatchEvent by its `type` (also works for members whose `type` is itself a union, e.g. period events). */
+export type EventOf<T extends EventType> = MatchEvent extends infer E
+  ? E extends { type: infer U }
+    ? T extends U
+      ? Omit<E, 'type'> & { type: T }
+      : never
+    : never
+  : never;
 
 /** 1 Hz synthetic tracking frame (ball + all on-pitch players). Used by the pitch view and auto-eventing. */
 export const TrackingFrame = z.object({

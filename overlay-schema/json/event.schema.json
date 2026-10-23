@@ -1106,7 +1106,8 @@
                 "save",
                 "clearance",
                 "offside",
-                "miscontrol"
+                "miscontrol",
+                "loose_ball"
               ]
             }
           },
