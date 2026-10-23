@@ -1,86 +1,58 @@
-import type { Moment } from '@matchlight/schema';
+import type { Language, Moment } from '@matchlight/schema';
+import { kit } from '../lib/kits';
+import { t } from '../lib/i18n';
 import { store } from '../lib/store';
 
-const GLYPH: Partial<Record<Moment['kind'], string>> = {
-  goal: '⚽',
-  red_card: '■',
-  card: '▮',
-  tactical_shift: '⇄',
-  momentum_swing: '↗',
-  pressing_shift: '⤧',
-  big_chance: '◎',
-  save: '✋',
-  substitution: '⇅',
-  period_summary: '⏱',
+const minuteOf = (m: Moment) => {
+  const base = parseInt(m.minute_label, 10);
+  const added = m.minute_label.includes('+') ? Number(m.minute_label.split('+')[1].replace("'", '')) : 0;
+  return base + added * 0.3;
 };
 
-/** Bottom timeline: momentum ribbon + key-moment markers. Click a marker to rewind to it. */
-export function Timeline() {
+/**
+ * Key moments in order, numbered because they are a real sequence. Positions use the inline-start
+ * edge, so in Arabic the match runs from right to left. Click a moment to rewind to it.
+ */
+export function Timeline({ lang }: { lang: Language }) {
   const meta = store.meta;
   const state = store.state;
-  if (!meta) return <footer className="timeline empty" />;
+  if (!meta) return <footer className="timeline" />;
   const minute = (state?.game_s ?? 0) / 60;
-  const key = store.moments.filter((m) => m.significance >= 0.6 || m.kind === 'card');
-  const x = (m: Moment) => {
-    const mm =
-      parseInt(m.minute_label, 10) +
-      (m.minute_label.includes('+') ? Number(m.minute_label.split('+')[1].replace("'", '')) * 0.3 : 0);
-    return Math.min(99, (mm / 96) * 100);
-  };
-  const series = state?.series.momentum ?? [];
-  const path = series
-    .map((p, i) => `${i ? 'L' : 'M'}${(p.minute / 96) * 1000},${30 - (p.v / 100) * 26}`)
-    .join(' ');
+  const key = store.moments.filter(
+    (m) => m.significance >= 0.66 || m.kind === 'goal' || m.kind === 'red_card',
+  );
+  const pos = (min: number) => `${Math.min(100, (min / 96) * 100)}%`;
   return (
-    <footer className="timeline" aria-label="Match timeline">
-      <div className="tl-track">
-        <svg className="tl-mom" viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden>
-          <defs>
-            <clipPath id="tl-top">
-              <rect x="0" y="0" width="1000" height="30" />
-            </clipPath>
-            <clipPath id="tl-bot">
-              <rect x="0" y="30" width="1000" height="30" />
-            </clipPath>
-          </defs>
-          {path && (
-            <>
-              <path
-                d={`${path} L${(series.at(-1)!.minute / 96) * 1000},30 L${(series[0].minute / 96) * 1000},30 Z`}
-                fill={meta.home.colors.primary}
-                opacity="0.55"
-                clipPath="url(#tl-top)"
-              />
-              <path
-                d={`${path} L${(series.at(-1)!.minute / 96) * 1000},30 L${(series[0].minute / 96) * 1000},30 Z`}
-                fill={meta.away.colors.primary}
-                opacity="0.55"
-                clipPath="url(#tl-bot)"
-              />
-            </>
-          )}
-          <line x1="0" y1="30" x2="1000" y2="30" stroke="rgba(255,255,255,.2)" />
-        </svg>
-        {[0, 15, 30, 45, 60, 75, 90].map((t) => (
-          <span key={t} className="tl-tick" style={{ left: `${(t / 96) * 100}%` }}>
-            {t}′
-          </span>
-        ))}
-        <div className="tl-head" style={{ left: `${Math.min(100, (minute / 96) * 100)}%` }} />
-        {key.map((m) => (
-          <button
-            key={m.id}
-            className={`tl-mark k-${m.kind}`}
-            style={{
-              left: `${x(m)}%`,
-              ['--team' as string]: m.team ? meta[m.team].colors.primary : 'var(--accent)',
-            }}
-            title={`${m.minute_label} ${m.headline} — click to rewind`}
-            onClick={() => store.control('seek', Math.max(0, m.ts - 8))}
-          >
-            {GLYPH[m.kind] ?? '•'}
-          </button>
-        ))}
+    <footer className="timeline">
+      <h2 className="sr-only">{t(lang, 'timeline')}</h2>
+      <div className="tl">
+        <span className="tl-half" style={{ insetInlineStart: pos(45) }} aria-hidden />
+        <span className="tl-now" style={{ insetInlineStart: pos(minute) }} aria-hidden />
+        <ol className="tl-moments">
+          {key.map((m, i) => (
+            <li
+              key={m.id}
+              style={{
+                insetInlineStart: pos(minuteOf(m)),
+                ['--kit' as string]: m.team ? kit(meta, m.team).base : 'var(--chalk-2)',
+              }}
+            >
+              <button
+                className={m.kind === 'goal' ? 'tl-mark tl-goal' : 'tl-mark'}
+                aria-label={`${i + 1}. ${m.minute_label} ${m.headline}. ${t(lang, 'rewind_to', { min: m.minute_label })}`}
+                title={`${m.minute_label} ${m.headline}`}
+                onClick={() => store.control('seek', Math.max(0, m.ts - 8))}
+              >
+                <span className="num">{i + 1}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+        <p className="tl-scale num" aria-hidden>
+          <span style={{ insetInlineStart: '0%' }}>0′</span>
+          <span style={{ insetInlineStart: pos(45) }}>45′</span>
+          <span style={{ insetInlineStart: pos(90) }}>90′</span>
+        </p>
       </div>
     </footer>
   );

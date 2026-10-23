@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Language, Recap } from '@matchlight/schema';
 import { api } from '../lib/api';
+import { kit } from '../lib/kits';
+import { t } from '../lib/i18n';
 import { store } from '../lib/store';
 import { speak } from '../lib/tts';
 
@@ -15,11 +17,13 @@ export function RecapModal({
 }) {
   const [recap, setRecap] = useState<Recap | null>(store.recaps.get(lang) ?? null);
   const [err, setErr] = useState<string | null>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const sid = store.sessionId!;
   useEffect(() => {
     api.recap(sid, lang).then(setRecap, (e) => setErr((e as Error).message));
   }, [sid, lang]);
   useEffect(() => {
+    closeRef.current?.focus();
     const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
@@ -31,92 +35,83 @@ export function RecapModal({
     a.download = name;
     a.click();
   };
+  const ft = store.state?.status === 'full_time';
   return (
-    <div className="modal-bg" onClick={onClose}>
+    <div className="sheet-bg" onClick={onClose}>
       <div
-        className="modal"
+        className="sheet"
         role="dialog"
         aria-modal="true"
-        aria-label="Match recap"
+        aria-labelledby="recap-title"
         onClick={(e) => e.stopPropagation()}
+        dir={lang === 'ar' ? 'rtl' : 'ltr'}
+        lang={lang}
       >
-        <button className="modal-x" onClick={onClose} aria-label="Close">
-          ×
+        <button ref={closeRef} className="btn sheet-close" onClick={onClose}>
+          {t(lang, 'close')}
         </button>
-        {!recap && !err && (
-          <div className="loading-block">Recap agent is writing… (article, 60-second script, ratings)</div>
-        )}
+        {!recap && !err && <p className="feed-empty">{t(lang, 'recap_writing')}</p>}
         {err && <p className="error">{err}</p>}
         {recap && (
-          <div className="recap" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-            <div className="recap-kicker">
-              {store.state?.status === 'full_time'
-                ? 'Full-time recap'
-                : `Recap so far · ${store.state?.minute_label ?? ''}`}{' '}
-              · {recap.source === 'llm' ? 'Azure OpenAI' : 'template'} ·{' '}
-              <span className={recap.grounded ? 'ok' : 'warn'}>
-                {recap.grounded ? 'Critic: grounded' : 'Critic: issues flagged'}
-              </span>
-            </div>
-            <h2>{recap.headline}</h2>
-            <div className="recap-score">
-              <span style={{ color: meta.home.colors.primary }}>{meta.home.name}</span>
-              <b>
-                {recap.final_score.home} – {recap.final_score.away}
+          <>
+            <p className="recap-when">
+              {ft ? t(lang, 'recap_ft') : t(lang, 'recap_so_far', { min: store.state?.minute_label ?? '' })}
+            </p>
+            <h2 id="recap-title" className="recap-head">
+              {recap.headline}
+            </h2>
+            <p className="recap-score">
+              <span style={{ ['--kit' as string]: kit(meta, 'home').base }}>{meta.home.name}</span>
+              <b className="num">
+                {recap.final_score.home}–{recap.final_score.away}
               </b>
-              <span style={{ color: meta.away.colors.primary }}>{meta.away.name}</span>
-            </div>
-            <div className="recap-grid">
-              <article className="recap-article" dir="ltr">
+              <span style={{ ['--kit' as string]: kit(meta, 'away').base }}>{meta.away.name}</span>
+            </p>
+            <p className={recap.grounded ? 'recap-check' : 'recap-check is-warn'}>
+              {t(lang, recap.grounded ? 'checked' : 'not_checked')}
+            </p>
+            <div className="recap-cols">
+              <article className="recap-article" dir="ltr" lang="en">
                 {recap.article_md
                   .split('\n')
-                  .filter((l) => l.trim() && !l.startsWith('# '))
+                  .filter((l) => l.trim() && !l.startsWith('# ') && !/^\*[^*].*\*$/.test(l.trim()))
                   .map((l, i) => (
-                    <p key={i} dangerouslySetInnerHTML={{ __html: mdInline(l) }} />
+                    <p key={i} dangerouslySetInnerHTML={{ __html: md(l) }} />
                   ))}
-                <h3>60-second script</h3>
-                <blockquote dir={lang === 'ar' ? 'rtl' : 'ltr'}>{recap.script_60s}</blockquote>
+                <h3>{t(lang, 'script')}</h3>
+                <blockquote dir={lang === 'ar' ? 'rtl' : 'ltr'} lang={lang}>
+                  {recap.script_60s}
+                </blockquote>
               </article>
               <aside>
-                <h3>Key moments</h3>
+                <h3>{t(lang, 'timeline')}</h3>
                 <ol className="recap-tl">
-                  {recap.timeline.map((t, i) => (
+                  {recap.timeline.map((x, i) => (
                     <li
                       key={i}
-                      style={{ ['--team' as string]: t.team ? meta[t.team].colors.primary : 'var(--accent)' }}
+                      style={{ ['--kit' as string]: x.team ? kit(meta, x.team).base : 'var(--chalk-2)' }}
                     >
-                      <b>{t.minute_label}</b> {t.title}
+                      <span className="num">{x.minute_label}</span> {x.title}
                     </li>
                   ))}
                 </ol>
-                <h3>Player ratings</h3>
-                <ol className="ratings">
-                  {recap.player_ratings.slice(0, 10).map((p) => (
-                    <li key={p.player_id}>
-                      <span className="r-val">{p.rating.toFixed(1)}</span>
-                      <span className="r-name" style={{ color: meta[p.side].colors.primary }}>
-                        {p.name}
-                      </span>
-                      <span className="r-why">{p.reason}</span>
-                    </li>
-                  ))}
-                </ol>
-                <table className="kstats">
+                <h3>{t(lang, 'ratings')}</h3>
+                <table className="ratings">
                   <tbody>
-                    {recap.key_stats.map((k) => (
-                      <tr key={k.label}>
-                        <td>{k.home}</td>
-                        <th>{k.label}</th>
-                        <td>{k.away}</td>
+                    {recap.player_ratings.slice(0, 8).map((p) => (
+                      <tr key={p.player_id} style={{ ['--kit' as string]: kit(meta, p.side).base }}>
+                        <td className="num">{p.rating.toFixed(1)}</td>
+                        <th scope="row">{p.name}</th>
+                        <td>{p.reason}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </aside>
             </div>
-            <div className="recap-actions">
+            <p className="recap-actions">
               <a className="btn" href={api.url(`/api/sessions/${sid}/recap?lang=${lang}&format=md`)}>
-                ⤓ Markdown
+                {t(lang, 'download_md')}
               </a>
               <button
                 className="btn"
@@ -128,33 +123,29 @@ export function RecapModal({
                   )
                 }
               >
-                ⤓ JSON
+                {t(lang, 'download_json')}
               </button>
               <a className="btn" href={api.url(`/api/sessions/${sid}/events.jsonl?all=1`)}>
-                ⤓ Event stream (JSONL)
+                {t(lang, 'download_stream')}
               </a>
               {ttsAzure ? (
                 <a className="btn" href={api.url(`/api/sessions/${sid}/recap.mp3?lang=${lang}`)}>
-                  ⤓ Narrated audio (MP3)
+                  {t(lang, 'download_mp3')}
                 </a>
               ) : (
-                <button
-                  className="btn"
-                  onClick={() => speak(recap.script_60s, lang)}
-                  title="Offline: browser speech. Configure Azure AI Speech for MP3 export."
-                >
-                  ▶ Play script
+                <button className="btn" onClick={() => speak(recap.script_60s, lang)}>
+                  {t(lang, 'play_script')}
                 </button>
               )}
-            </div>
-          </div>
+            </p>
+          </>
         )}
       </div>
     </div>
   );
 }
 
-function mdInline(s: string): string {
+function md(s: string): string {
   const esc = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return esc.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
 }

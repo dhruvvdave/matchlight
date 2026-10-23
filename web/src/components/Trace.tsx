@@ -1,83 +1,92 @@
 import { useEffect, useState } from 'react';
-import type { AgentName } from '@matchlight/schema';
+import type { CriticIssue, Language, TraceSpan } from '@matchlight/schema';
 import { api } from '../lib/api';
+import { t } from '../lib/i18n';
 import { store } from '../lib/store';
 
-const PIPELINE: { agent: AgentName; label: string; stage: string }[] = [
-  { agent: 'director', label: 'Director', stage: 'orchestrate' },
-  { agent: 'stats', label: 'Stats', stage: 'interpret' },
-  { agent: 'explainer', label: 'Explainer', stage: 'explain' },
-  { agent: 'critic', label: 'Critic', stage: 'verify' },
-  { agent: 'personalizer', label: 'Personalizer', stage: 'personalize' },
-  { agent: 'narrator', label: 'Narrator', stage: 'narrate' },
-  { agent: 'translator', label: 'Translator', stage: 'localize' },
-  { agent: 'recap', label: 'Recap', stage: 'summarize' },
-];
+/** Turn a Critic issue into a plain sentence. */
+function issueText(i: CriticIssue): string {
+  const quoted = i.detail.match(/"([^"]+)"/)?.[1];
+  switch (i.code) {
+    case 'unsupported_number':
+      return `no match data supports the figure ${quoted ?? 'cited'}`;
+    case 'unsupported_entity':
+      return `${i.detail.replace(/^mentions /, '').replace(/, who is not in the evidence$/, '')} played no part in this moment`;
+    case 'direction_mismatch':
+      return i.detail.replace(/\(.*?\)/g, '').replace('but text says', 'but the draft said');
+    case 'too_many_numbers':
+      return 'too many numbers for a fan line';
+    case 'unknown_fact':
+      return 'it cited evidence that doesn’t exist';
+    case 'unknown_event':
+      return 'it cited an event that never happened';
+    case 'overconfident':
+      return 'it claimed more certainty than the evidence allows';
+    default:
+      return i.detail;
+  }
+}
 
-export function Trace() {
-  const [filter, setFilter] = useState<AgentName | 'all'>('all');
-  const [lat, setLat] = useState<{ fast: number; llm: number; n: number } | null>(null);
-  const [providers, setProviders] = useState<{ llm: string; translator: string } | null>(null);
+/** One plain-language line per agent step. */
+function describe(s: TraceSpan): string {
+  const issues = (s.detail?.issues as CriticIssue[] | undefined) ?? [];
+  if (s.agent === 'critic' && s.status === 'rejected') {
+    return issues.length
+      ? `Critic rejected a claim: ${issues.map(issueText).join('; ')}.`
+      : 'Critic rejected a claim.';
+  }
+  if (s.agent === 'critic' && s.status === 'ok')
+    return 'Critic checked every number and name against the match data.';
+  if (s.agent === 'director') {
+    const m = s.summary.match(/^(\S+) (\S+) sig=([\d.]+)( → explain)?: (.*)$/);
+    if (m) return `Director picked ${m[5]} at ${m[1]}${m[4] ? ' and asked for an explanation' : ''}.`;
+  }
+  if (s.agent === 'stats')
+    return `Stats agent pulled the evidence: ${s.summary.replace(/ tool call\(s\) → /, ' lookups, ').replace(' fact(s)', ' facts')}.`;
+  if (s.agent === 'explainer' && s.op.startsWith('redraft'))
+    return `Explainer wrote a new draft: ${s.summary.replace(/^\S+ draft: /, '')}`;
+  if (s.agent === 'explainer' && s.op === 'draft')
+    return `Explainer drafted: ${s.summary.replace(/^\S+ draft: /, '')}`;
+  if (s.agent === 'explainer' && s.status === 'fallback')
+    return 'Explainer ran out of attempts, so the checked template line stays.';
+  if (s.agent === 'personalizer')
+    return `Personalizer chose graphics per channel (${s.summary.replace(/\|/g, ';')}).`;
+  if (s.agent === 'narrator' && s.status === 'fallback')
+    return 'Narrator was too slow, so the instant line stays on screen.';
+  if (s.agent === 'translator' && s.status === 'skipped')
+    return 'No translation service is connected, so the hand-written local line stays.';
+  return s.summary;
+}
+
+export function Trace({ lang }: { lang: Language }) {
+  const [lat, setLat] = useState<{ fast: number; llm: number } | null>(null);
   useEffect(() => {
     const id = setInterval(async () => {
       if (!store.sessionId) return;
       try {
         const s = await api.summary(store.sessionId);
-        setLat({ fast: s.latency.fast_path.p95, llm: s.latency.llm_path.p95, n: s.latency.fast_path.count });
-        setProviders(s.providers);
+        setLat({ fast: s.latency.fast_path.p95, llm: s.latency.llm_path.p95 });
       } catch {
-        /* ignore */
+        /* the log keeps working without latency numbers */
       }
     }, 3000);
     return () => clearInterval(id);
   }, []);
-  const spans = store.trace;
-  const recent = new Map<string, number>();
-  const wallNow = spans.at(-1)?.wall_ms ?? 0;
-  for (const s of spans) recent.set(s.agent, s.wall_ms);
-  const shown = [...spans]
-    .reverse()
-    .filter((s) => filter === 'all' || s.agent === filter)
-    .slice(0, 120);
+  const spans = [...store.trace].reverse().slice(0, 120);
   return (
-    <div className="trace">
-      <div className="pipeline" aria-label="Agent pipeline">
-        {PIPELINE.map((p, i) => {
-          const hot = wallNow - (recent.get(p.agent) ?? -1e9) < 1500;
-          return (
-            <button
-              key={p.agent}
-              className={`node a-${p.agent} ${hot ? 'hot' : ''} ${filter === p.agent ? 'sel' : ''}`}
-              onClick={() => setFilter(filter === p.agent ? 'all' : p.agent)}
-            >
-              <span className="node-label">{p.label}</span>
-              <span className="node-stage">{p.stage}</span>
-              {i < PIPELINE.length - 1 && <span className="node-arrow" aria-hidden />}
-            </button>
-          );
-        })}
-      </div>
-      <div className="latency">
-        <span>
-          event→overlay p95 <b>{lat ? `${lat.fast.toFixed(1)} ms` : '…'}</b>{' '}
-          <em className={lat && lat.fast < 1500 ? 'ok' : ''}>budget 1500 ms</em>
-        </span>
-        <span>
-          LLM path p95 <b>{lat ? `${Math.round(lat.llm)} ms` : '…'}</b>
-        </span>
-        {providers && (
-          <span className="muted">
-            LLM: {providers.llm} · i18n: {providers.translator}
-          </span>
-        )}
-      </div>
-      <ol className="spans">
-        {shown.map((s) => (
-          <li key={s.id} className={`span st-${s.status} a-${s.agent}`}>
-            <span className="sp-agent">{s.agent}</span>
-            <span className="sp-op">{s.op}</span>
-            <span className="sp-lat">{s.latency_ms ? `${s.latency_ms.toFixed(0)}ms` : ''}</span>
-            <span className="sp-sum">{s.summary}</span>
+    <div className="log">
+      {lat && (
+        <p className="log-latency">
+          {t(lang, 'log_latency', { fast: lat.fast.toFixed(1), llm: Math.round(lat.llm) })}
+        </p>
+      )}
+      {spans.length === 0 && <p className="feed-empty">{t(lang, 'log_empty')}</p>}
+      <ol className="log-list" lang="en" dir="ltr">
+        {spans.map((s) => (
+          <li key={s.id} className={`log-row st-${s.status}`}>
+            <span className="log-agent">{s.agent}</span>
+            <span className="log-text">{describe(s)}</span>
+            {s.latency_ms > 1 && <span className="log-ms num">{Math.round(s.latency_ms)} ms</span>}
           </li>
         ))}
       </ol>

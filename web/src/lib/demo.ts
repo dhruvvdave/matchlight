@@ -10,18 +10,18 @@ export interface DemoStep {
   /** Football minute at which the step fires (match clock). */
   at: number;
   caption: string;
-  view?: 'broadcast' | 'split';
+  view?: 'single' | 'compare';
   main?: ViewerProfile;
   second?: ViewerProfile;
-  tab?: 'feed' | 'ask' | 'trace';
+  desk?: 'ask' | 'log' | null;
   speed?: number;
   ask?: string;
   recap?: boolean;
 }
 
 /**
- * Scripted 90-second demo: the seeded comeback from 58' at 20x, switching personas and languages on cue,
- * then 60x to full-time and the automated recap. Deterministic seed => identical every run.
+ * Scripted 90-second demo: the seeded comeback from 59' at 20x, switching channels and languages on cue,
+ * then 60x to full-time and the automated recap. Deterministic seed, so every run is identical.
  */
 export const DEMO = {
   scenario: 'late-comeback',
@@ -31,47 +31,48 @@ export const DEMO = {
     {
       at: 0,
       caption:
-        'Live synthetic match · 0–2 down at 59′ · Analyst view: xG, PPDA, momentum, evidence-backed cards',
-      view: 'broadcast',
+        'Harbourside are two goals down on the hour. The analyst channel draws the press and the passes on the pitch.',
+      view: 'single',
       main: P({ mode: 'analyst', language: 'en' }),
-      tab: 'feed',
+      desk: null,
     },
     {
       at: 61,
-      caption: 'Same event stream, different broadcasts → Analyst (EN) vs Casual fan (Español)',
-      view: 'split',
+      caption: 'Same match, two channels: the analyst in English and a fan in Spanish.',
+      view: 'compare',
       main: P({ mode: 'analyst', language: 'en' }),
       second: P({ mode: 'casual', language: 'es' }),
     },
     {
       at: 64,
-      caption: 'Agent trace: Director → Stats → Explainer → Critic → Personalizer → Narrator',
-      tab: 'trace',
+      caption: 'The agent log explains each step in plain words, including the claims the Critic throws out.',
+      desk: 'log',
     },
     {
       at: 68,
-      caption: 'Player focus in Hindi (heatmap + running stats) · Club mode in Arabic, right-to-left',
+      caption:
+        'Follow one player in Hindi, or watch as a home fan in Arabic with the layout running right to left.',
       main: P({ mode: 'player', language: 'hi', focus_player_id: 'hba-11' }),
       second: P({ mode: 'club', language: 'ar', favorite_team: 'home' }),
-      tab: 'feed',
+      desk: null,
     },
     {
       at: 74,
-      caption: 'Single-metric mode: only ball speed · French',
+      caption: 'The one-number channel tracks only ball speed, here in French.',
       second: P({ mode: 'metric', language: 'fr', metric: 'ball_speed' }),
     },
     {
       at: 78,
-      caption: 'Ask the match: answers grounded in the event store',
-      view: 'broadcast',
+      caption: 'Ask the match a question. The answer comes from the event data and gets checked.',
+      view: 'single',
       main: P({ mode: 'analyst', language: 'en' }),
-      tab: 'ask',
+      desk: 'ask',
       ask: 'Why did the momentum change?',
     },
-    { at: 82, caption: 'Fast-forward 60× to full-time', speed: 60, tab: 'feed' },
+    { at: 82, caption: 'Fast forward to full-time at sixty times speed.', speed: 60, desk: null },
     {
       at: 999,
-      caption: 'Recap agent: article, 60-second script, timeline, ratings · export Markdown / JSON / audio',
+      caption: 'The recap agent writes the report, a sixty-second script and the player ratings.',
       recap: true,
     },
   ] as DemoStep[],
