@@ -695,6 +695,7 @@ input[type='text'],
 
 /* momentum bar */
 .mbar {
+  direction: ltr; /* keep home-left / away-right consistent with the pitch in every language */
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;

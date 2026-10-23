@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+name: matchlight
+metadata:
+  template: matchlight@0.1.0
+infra:
+  provider: bicep
+  path: infra
+services:
+  api:
+    project: .
+    language: js
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
+  web:
+    project: ./web
+    language: js
+    host: staticwebapp
+    dist: dist
+    hooks:
+      prebuild:
+        posix:
+          shell: sh
+          run: echo "VITE_API_BASE=$API_URL" > .env.production.local
+        windows:
+          shell: pwsh
+          run: Set-Content -Path .env.production.local -Value "VITE_API_BASE=$env:API_URL"

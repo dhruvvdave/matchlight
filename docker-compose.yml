@@ -1,0 +1,12 @@
+# One command: `docker compose up` -> http://localhost:8787 (offline mode: mock LLM, local Web PubSub emulator).
+services:
+  matchlight:
+    build: .
+    ports:
+      - '8787:8787'
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      PORT: '8787'
+    restart: unless-stopped

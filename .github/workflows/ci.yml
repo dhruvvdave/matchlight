@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Tests (unit, schema, seeded replay, golden overlays, agents, API integration)
+        run: npm test
+      - name: Build (web + api bundle)
+        run: npm run build
+      - name: Schema drift
+        run: npm run schema:gen && git diff --exit-code overlay-schema/json
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t matchlight:ci .
+      - name: Smoke test
+        run: |
+          docker run -d -p 8787:8787 --name ml matchlight:ci
+          for i in $(seq 1 30); do curl -sf localhost:8787/healthz && break; sleep 1; done
+          curl -sf -X POST localhost:8787/api/sessions -H 'content-type: application/json' -d '{"scenario":"late-comeback","speed":60}'
