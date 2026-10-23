@@ -16,6 +16,7 @@
     "@matchlight/pipeline": "0.1.0",
     "@matchlight/schema": "0.1.0",
     "@matchlight/simulator": "0.1.0",
-    "ws": "8.18.0"
+    "ws": "8.18.0",
+    "zod": "3.23.8"
   }
 }
