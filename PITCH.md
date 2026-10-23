@@ -1,0 +1,5 @@
+# Matchlight: the pitch
+
+Live football produces thousands of events a match, yet broadcasts serve one generic story to millions of different fans, and AI commentary can't be trusted if it invents facts. **Matchlight** is a multi-agent match-intelligence engine. It turns a live event stream into explainable insight, timed broadcast overlays and genuinely personalised experiences: analyst, casual fan, "my club", single-player focus or one-metric views, in English, French, Spanish, Hindi and Arabic. A Director agent decides what matters. A Stats agent gathers evidence. An Explainer, orchestrated with **Microsoft Agent Framework** on **Azure OpenAI in Azure AI Foundry**, says _why_ it matters, and a Critic rejects any number or name the data can't support. **Azure AI Translator** and **Azure AI Speech** localise and voice it. **Azure Web PubSub** pushes overlays in milliseconds, with **Container Apps**, **Cosmos DB** and **Static Web Apps** behind them. The result: trustworthy, personal storytelling for every fan, on fully synthetic data.
+
+_(150 words)_

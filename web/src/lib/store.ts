@@ -133,12 +133,26 @@ export class SessionStore {
     }
     const v: ViewerData = { key, profile: p, feed: [], overlays: new Map(), answers: [], refs: 1 };
     this.viewers.set(key, v);
-    const r = await api.addProfile(this.sessionId, p);
-    v.feed = r.feed;
-    for (const o of r.overlays) v.overlays.set(o.id, o);
-    await this.client?.join(r.group);
-    this.changed();
-    return key;
+    // Register with the server (retry once), merging with anything pushed while the request was in flight.
+    for (let attempt = 0; ; attempt++) {
+      try {
+        const r = await api.addProfile(this.sessionId, p);
+        const pushed = new Set(v.feed.map((f) => f.id));
+        v.feed = [...r.feed.filter((f) => !pushed.has(f.id)), ...v.feed].sort((a, b) => a.ts - b.ts);
+        for (const o of r.overlays) if (!v.overlays.has(o.id)) v.overlays.set(o.id, o);
+        await this.client?.join(r.group);
+        this.changed();
+        return key;
+      } catch (e) {
+        if (attempt >= 1) {
+          if (this.viewers.get(key) === v) this.viewers.delete(key);
+          this.error = `Could not register viewer ${key}: ${(e as Error).message}`;
+          this.changed();
+          throw e;
+        }
+        await new Promise((r) => setTimeout(r, 400));
+      }
+    }
   }
 
   removeViewer(key: string) {
