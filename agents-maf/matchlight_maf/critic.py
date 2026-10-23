@@ -32,6 +32,7 @@ def _allowed_numbers(ctx: GroundingContext) -> list[float]:
             push(f.get(k))
         for v in (f.get("params") or {}).values():
             push(v)
+        push(f.get("text"))  # canonical fact text is generated from data
     push(ctx.minute_label)
     return out
 

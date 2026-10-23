@@ -6213,6 +6213,63 @@
   "body": "المدرب يغامر: نهاجم بكل شيء الآن!"
  },
  {
+  "id": "analyst.en:key_moment_card:0120",
+  "kind": "key_moment_card",
+  "start_ts": 3836.6,
+  "duration": 12.4,
+  "priority": 81,
+  "region": "right_rail",
+  "position": {
+   "x": 0.72,
+   "y": 0.18,
+   "w": 0.28,
+   "h": 0.46
+  },
+  "key": "card:shift:e01347",
+  "lang": "en",
+  "dir": "ltr",
+  "text": "Tactical change · 62'",
+  "body": "62' HBA switch from 4-3-3 to 4-2-4, pressing higher."
+ },
+ {
+  "id": "casual.fr:key_moment_card:0082",
+  "kind": "key_moment_card",
+  "start_ts": 3836.6,
+  "duration": 12.4,
+  "priority": 83,
+  "region": "right_rail",
+  "position": {
+   "x": 0.72,
+   "y": 0.18,
+   "w": 0.28,
+   "h": 0.46
+  },
+  "key": "card:shift:e01347",
+  "lang": "fr",
+  "dir": "ltr",
+  "text": "Changement tactique · 62'",
+  "body": "Harbourside Athletic prend des risques : plus d’attaquants et un pressing haut."
+ },
+ {
+  "id": "club.ar.home:key_moment_card:0091",
+  "kind": "key_moment_card",
+  "start_ts": 3836.6,
+  "duration": 12.4,
+  "priority": 90,
+  "region": "right_rail",
+  "position": {
+   "x": 0,
+   "y": 0.18,
+   "w": 0.28,
+   "h": 0.46
+  },
+  "key": "card:shift:e01347",
+  "lang": "ar",
+  "dir": "rtl",
+  "text": "تغيير تكتيكي · 62'",
+  "body": "المدرب يغامر: نهاجم بكل شيء الآن!"
+ },
+ {
   "id": "analyst.en:momentum_bar:0000",
   "kind": "momentum_bar",
   "start_ts": 5,

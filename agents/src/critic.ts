@@ -70,6 +70,8 @@ export class CriticAgent {
       push(f.previous);
       push(f.delta);
       for (const v of Object.values(f.params ?? {})) push(v);
+      // The canonical fact text is generated from the data, so numbers in it are grounded too.
+      push(f.text);
       if (typeof f.value === 'number' && typeof f.previous === 'number')
         push(Math.round((f.value - f.previous) * 10) / 10);
     }
