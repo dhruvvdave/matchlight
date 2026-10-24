@@ -1,5 +1,7 @@
 # Screenshots
 
+![Matchlight cover](00-cover.png)
+
 Screenshots of the Matchlight web client running on synthetic match data. Every club, player and kit is fictional.
 
 Desktop shots are 1440 × 900. Mobile shots are 390 × 844 at 2× density.
