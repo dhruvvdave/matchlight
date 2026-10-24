@@ -30,11 +30,13 @@ Every narrative is **grounded**. The Explainer must cite facts (`{claim, evidenc
 
 ![pipeline](docs/img/pipeline.svg)
 
-| Analyst broadcast (EN) vs casual fan (ES), with the agent trace live | Player focus (हिन्दी) + My club (العربية, RTL)          |
-| -------------------------------------------------------------------- | ------------------------------------------------------- |
-| ![split](docs/img/split-analyst-casual-es.png)                       | ![player and club](docs/img/player-hi-club-ar-rtl.png)  |
-| **Single-metric mode (FR) · pinned ball-speed badge**                | **Automated recap: article, script, timeline, ratings** |
-| ![metric](docs/img/metric-mode.png)                                  | ![recap](docs/img/recap.png)                            |
+| Analyst channel                       | Arabic, right to left                                  |
+| ------------------------------------- | ------------------------------------------------------ |
+| ![analyst](images/01-analyst-en.png)  | ![analyst in Arabic](images/05-analyst-arabic-rtl.png) |
+| **Agent log**                         | **Recap**                                              |
+| ![agent log](images/09-agent-log.png) | ![recap](images/10-recap.png)                          |
+
+More screenshots, including every channel and mobile, are in [`images/`](images/README.md).
 
 ## The five-stage pipeline
 
